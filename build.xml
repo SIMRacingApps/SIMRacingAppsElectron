@@ -1,0 +1,59 @@
+<project basedir="." default="sra" name="SIMRacingAppsElectron">
+    <tstamp>
+        <format property="build.time" pattern="yyyy.MM.dd.HH.mm.ss" />
+    </tstamp>
+    <tstamp>
+        <format property="build.date" pattern="yyyy.MM.dd" />
+    </tstamp>
+    <tstamp>
+        <format property="build.year" pattern="yyyy" />
+    </tstamp>
+    <property name="deployment.dir" value="${user.home}/Documents/SIMRacingApps" />
+    <loadresource property="electron.package.json">
+        <concat>
+            <fileset dir="." includes="package.json">
+            </fileset>
+        </concat>
+    </loadresource>
+    <property name="electron_version.json" value="${electron.package.json}" />
+    <!-- echo message="${electron_version.json}" / -->
+    <script language="javascript">
+        var package = JSON.parse(project.getProperty("electron_version.json"));
+        property = project.createTask("property");
+        property.setName("electron_version");
+        property.setValue(package.version);
+        property.perform();
+    </script>
+    <echo message="electron-apps Version: ${electron_version}" />
+
+    <target name="sra">
+        <delete dir="${java.io.tmpdir}/electron-apps" />
+        <mkdir dir="${java.io.tmpdir}/electron-apps" />
+        <mkdir dir="${java.io.tmpdir}/electron-apps/electron-apps" />
+        <mkdir dir="${java.io.tmpdir}/electron-apps/electron-apps/electron" />
+        <copy todir="${java.io.tmpdir}/electron-apps/electron-apps">
+            <fileset dir=".">
+                <exclude name="build.xml" />
+                <exclude name=".project" />
+            </fileset>
+            <fileset dir="X:/">
+                <include name="electron/**" />
+            </fileset>
+        </copy>
+        <zip destfile="${java.io.tmpdir}/electron-apps_${electron_version}.sra" basedir="${java.io.tmpdir}/electron-apps" />
+    </target>
+    <target name="deploy" depends="sra">
+        <copy overwrite="true" file="${java.io.tmpdir}/electron-apps_${electron_version}.sra" todir="${deployment.dir}" />
+        <copy overwrite="true" file="_electron-apps-readme.txt" tofile="${deployment.dir}/electron-apps-readme.txt" />
+        <copy overwrite="true" todir="${deployment.dir}/electron-apps">
+            <fileset dir=".">
+                <exclude name="build.xml" />
+                <exclude name=".project" />
+            </fileset>
+            <fileset dir="X:/">
+                <include name="electron/**" />
+            </fileset>
+        </copy>
+        <echo message="Deployed Electron-Apps ${electron_version} to ${deployment.dir}/electron-apps" />
+    </target>
+</project>

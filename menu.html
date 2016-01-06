@@ -1,0 +1,490 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="cache-control" content="no-cache">
+    <style>
+        body {
+            width:     100%;
+            font-size: 16px;
+        }
+        .logo {
+            float: left;
+            width: 30%;
+        }
+        .logoimg {
+            width: 140px;
+        }
+        .header {
+            background-color: blue;
+            color:            white;
+            width:            100%;
+            clear:            both;
+            font-size:        150%;
+            line-height:      70%;
+            text-align:       center;
+            padding-bottom:   10px;
+            white-space:      nowrap;
+        }
+        #sratitle {
+            color:            white;
+        }
+        #update {
+            color:            chartreuse;
+            font-size:        18px;
+        }
+        .copyright {
+            color:            white;
+            font-size:        15px;
+        }
+        .license {
+            color:            white;
+            font-size:        15px;
+        }
+        .notice {
+            color:            white;
+            font-size:        15px;
+        }
+        .releasenotes {
+            color:            white;
+            font-size:        15px;
+        }
+        .version {
+            background-color: blue;
+            color:            white;
+            width:            100%;
+            clear:            both;
+            font-size:        15px;
+            text-align:       center;
+            padding-bottom:   10px;
+            white-space:      nowrap;
+        }
+        .item {
+            width: 100%;
+            height: 60px;
+            background-color: dimgray;
+            margin-bottom: 3px;
+            margin-top: 3px;
+        }
+        .icon {
+            max-width:  100px;
+            max-height: 60px;
+            text-align: center;
+        }
+        .name {
+            text-align: center;
+        }
+        #SRAurl {
+            background-color: blue;
+            color:            white;
+            clear:            both;
+            font-size:        15px;
+            text-align:       left;
+            padding-bottom:   10px;
+            white-space:      nowrap;
+        }
+        #SRAconfigurationForm {
+            text-align: left;
+        }
+        .settings {
+            width: 3%;
+            min-width: 35px;
+            min-height: 35px;
+            float: right;
+            margin-right: 5%;
+        }
+        .options_form {
+            white-space: nowrap;
+            color: white;
+        }
+        .options_label {
+            white-space: nowrap;
+        }
+        .itemtext {
+            height: 100%;
+            font-size: 100%;
+            text-align: left;
+            white-space: nowrap;
+            color: white;
+        }
+        .itemdesc {
+            height: 100%;
+            font-size: 70%;
+            text-align: left;
+            color: white;
+        }
+        .upload {
+            font-size: 25px;
+        }
+    </style>
+  </head>
+<body id="body" style="width: 100%">
+    <table>
+    <thead>
+        <tr id="header_row"><td width='100%'>
+            <div class="header">
+                <table width='100%'><tr>
+                <td>
+                    <img onclick="javascript:window.location.reload();" class="logoimg" src="resources/SRA-Logo-256x256.png" /><br />
+                </td>
+                <td class="header">
+                    <a id="sratitle" target="_blank" href="http://SIMRacingApps.com">SIMRacingApps.com</a><br />
+                    <span id="electron_version" class="version"></span><br />
+                    <span id="version" class="version"></span><br />
+                    <a id='update' target='_blank' href='http://github.com/SIMRacingApps/SIMRacingApps/releases/latest'"></a>
+                    <a id="copyright" class="copyright" target="_blank">Copyright</a><br />
+                    <a id="license" class="license" target="_blank">License</a><br />
+                    <a id="notice" class="notice" target="_blank">NOTICE</a><br />
+                    <a id="releasenotes" class="releasenotes" target="_blank">Release Notes</a><br />
+                    <span id="SRAurl"></span>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <form id="SRAconfigurationForm" class="SRAconfigurationForm">
+                         Configuration:<br />
+                         <input oninput="javascript:updateButtons();" type="text" id="SRAconfiguration" name="configuration" value="default">
+                         <input onclick="javascript:saveConfiguration();" type="button" disabled="true" value="Create" name="save" id="save" />
+                         <input onclick="javascript:deleteConfiguration();" type="button" disabled="true" value="Delete" name="delete" id="delete" />
+                         <br />
+                         <select id="configurations" name="configurations">
+                              <option value="default">default</option>
+                         </select>
+                    </form>
+                </td>
+                <td>
+                    <a id="settings" href="javascript:launch('settings');"><img class="settings" src="resources/settings-icon.png" alt="Settings"></a>
+                </td>
+                </tr>
+                </table>
+            </div>    
+        </td></tr>
+    </thead>
+    <tbody>
+        <table id="listingsTable" width="100%">
+            <colgroup>
+                <col style="width: 200px" />
+                <col style="width: 200px" />
+                <col style="width: 100%"  />
+            </colgroup>
+            <tbody id="listingsBody">
+            <tr><td>Loading... If menu doesn't load, verify the SIMRacingAppsServer is running. Then click the Logo to refresh the page.</td></tr>
+            </tbody>
+        </table>
+    </tbody>
+    <tfoot>
+        <tr id="upload_row"><td>
+            <form id="upload" class="upload" method="POST" enctype="multipart/form-data">
+                To install or update an App, Widget or Patch,<br />
+                choose a File to upload, then click "Upload."<br />
+                Files will be uploaded into your user directory (<span id="userPath"></span>), <br />
+                which is searched first by the server.<br />
+                <input type="file" name="file" id="file" accept=".sra"/>
+                <input type="submit" value="Upload" name="upload" id="upload" />
+            </form>
+        </td></tr>
+    </tfoot>
+    </table>
+    <script type="text/javascript">
+        const ipc = require('electron').ipcRenderer;
+        var websiteVersion = {};
+        var serverVersion = {};
+        var SRAlauncher = {};
+        
+        function launch(name) {
+            ipc.send('loadApp',name);
+        }
+        
+        function saveOptions(name) {
+            var length = document.forms.length;
+            for(var i = 0; i < length; i++) {
+                var form = document.forms[i];
+                if (form.id == ("options-"+name)) {
+                    //This storage key is used by the AppWindows to save position and size
+                    //therefore, read it in before you save the options with it.
+                    var item = {
+                        name:          name,
+                        transparent:   form.transparent.checked,
+                        frame:         form.frame.checked,
+                        loadonstartup: form.loadonstartup.checked
+                    };
+                    ipc.send('itemChanged',item);
+                }
+            }
+        };
+        
+        function deleteConfiguration() {
+            var length = document.forms.length;
+            for(var i = 0; i < length; i++) {
+                var form = document.forms[i];
+                if(form.id == "SRAconfigurationForm") {
+                    var configuration = form.configuration.value;
+                    delete SRAlauncher.configurations[configuration];
+                    SRAlauncher.configuration = 'default';
+                    ipc.send('deleteConfiguration',configuration);
+                }
+            }
+        }
+        
+        function saveConfiguration() {
+            var length = document.forms.length;
+            for(var i = 0; i < length; i++) {
+                var form = document.forms[i];
+                if(form.id == "SRAconfigurationForm") {
+                    var configuration = form.configuration.value;
+                    SRAlauncher.configuration = configuration;
+                    SRAlauncher.configurations[configuration] = true;
+                    console.log('ipc.send.loadConfiguration('+configuration+')');
+                    ipc.send('loadConfiguration',configuration);
+                }
+            }
+        }
+        
+        function updateButtons() {
+            var length = document.forms.length;
+            for(var i = 0; i < length; i++) {
+                var form = document.forms[i];
+                if(form.id == "SRAconfigurationForm") {
+                    var configuration = form.configuration.value;
+                    if (configuration && !SRAlauncher.configurations[configuration]) {
+                        //console.log("New Configuration: " + configuration);
+                        document.getElementById("save").disabled = false;
+                        document.getElementById("delete").disabled = true;
+                    }
+                    else {
+                        //console.log("Existing Configuration: " + configuration);
+                        document.getElementById("save").disabled = true;
+                        if (configuration) {
+                            if (configuration != 'default')
+                                document.getElementById("delete").disabled = false;
+                            else
+                                document.getElementById("delete").disabled = true;
+                            
+                            if (SRAlauncher.configuration != configuration) {
+                                SRAlauncher.configuration = configuration;
+                                console.log('ipc.send.loadConfiguration('+configuration+')');
+                                ipc.send('loadConfiguration',configuration);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        ipc.on('listings',function(e,items) {
+            var SRAurl = "http://"+items.SRAlauncher.hostname + (items.SRAlauncher.port == 80 ? "" : ":" + items.SRAlauncher.port);
+            
+            SRAlauncher = items.SRAlauncher;
+            document.getElementById("SRAconfiguration").value = SRAlauncher.configuration;
+            var datalist = document.getElementById("configurations");
+            datalist.parentElement.removeChild(datalist);
+            datalist = document.createElement("select");
+            datalist.setAttribute("id","configurations");
+            datalist.setAttribute("name","configurations");
+            datalist.addEventListener('change',function(e) {
+                var theinput = document.getElementById("SRAconfiguration");
+                var thelist  = document.getElementById("configurations");
+                var idx = e.target.selectedIndex;
+                var content = thelist.options[idx].innerHTML;
+                theinput.value = content;
+                saveConfiguration();
+            },false);
+            var selectedIndex = 0;
+            for (var configuration in SRAlauncher.configurations) {
+                var option = document.createElement("option");
+                option.setAttribute("value",configuration);
+                option.innerHTML = configuration;
+                datalist.appendChild(option);
+                if (SRAlauncher.configuration == configuration)
+                    datalist.selectedIndex = selectedIndex;
+                selectedIndex++;
+            }
+            document.getElementById("SRAconfigurationForm").appendChild(datalist);
+            updateButtons();
+            
+            serverVersion = items.version;
+            console.log("listings: " + JSON.stringify(serverVersion));
+            
+            document.getElementById("version").innerHTML = 'Server Version: ' 
+                                                         + serverVersion.major 
+                                                         + '.' + serverVersion.minor 
+                                                         + "_" + serverVersion.build;
+            document.getElementById("userPath").innerHTML = serverVersion.userpath;
+            document.getElementById("copyright").href     = SRAurl + serverVersion.copyrightUrl;
+            document.getElementById("license").href       = SRAurl + serverVersion.licenseUrl;
+            document.getElementById("notice").href        = SRAurl + serverVersion.noticeUrl;
+            document.getElementById("releasenotes").href  = SRAurl + serverVersion.releasenotes;
+            document.getElementById("electron_version").innerHTML = 'Electron-Apps Version: ' + items.SRAlauncher.version;
+            document.getElementById("SRAurl").innerHTML   = "Server URL: "+SRAurl;
+            checkForUpdate();
+            
+            var listingsTable = document.getElementById("listingsTable");
+            
+            var listingsBody = document.getElementById("listingsBody");
+            listingsBody.parentElement.removeChild(listingsBody);
+
+            listingsBody = document.createElement("tbody");
+            listingsBody.setAttribute('id','listingsBody');
+            
+            for (var headeridx in items.headers) {
+                var header = items.headers[headeridx];
+                if (items[header].length > 0) {
+                    var tr_header = document.createElement('tr');
+                    
+                    var td_header = document.createElement('td');
+                    td_header.setAttribute('class','header');
+                    td_header.setAttribute('colspan','3');
+                    td_header.innerHTML = header;
+                    tr_header.appendChild(td_header);
+                    
+                    listingsBody.appendChild(tr_header);
+                    
+                    for (var itemsidx in items[header]) {
+                        var item = items[header][itemsidx];
+
+                        var tr_item = document.createElement('tr');
+                        listingsBody.appendChild(tr_item);
+                        tr_item.setAttribute('class','item');
+                        
+                        var td_form = document.createElement('td');
+                        tr_item.appendChild(td_form);
+                        
+                        var form_options = document.createElement('form');
+                        td_form.appendChild(form_options);
+                        form_options.setAttribute('class','options_form');
+                        form_options.setAttribute('data-name',item.name);
+                        form_options.setAttribute('id','options-' + item.name);
+                        
+                        var input_transparent = document.createElement('input');
+                        form_options.appendChild(input_transparent);
+                        input_transparent.setAttribute('type','checkbox');
+                        input_transparent.setAttribute('name','transparent');
+                        input_transparent.setAttribute('value','transparent');
+                        input_transparent.setAttribute('id',item.name + '-transparent');
+                        input_transparent.checked = item.transparent;
+                        input_transparent.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+                        
+                        var label_transparent = document.createElement('label');
+                        form_options.appendChild(label_transparent);
+                        label_transparent.setAttribute('for',item.name + '-transparent');
+                        label_transparent.setAttribute('class','options_label');
+                        label_transparent.innerHTML = "Transparent";
+                        
+                        form_options.appendChild(document.createElement('br'));
+
+                        var input_frame = document.createElement('input');
+                        form_options.appendChild(input_frame);
+                        input_frame.setAttribute('type','checkbox');
+                        input_frame.setAttribute('name','frame');
+                        input_frame.setAttribute('value','frame');
+                        input_frame.setAttribute('id',item.name + '-frame');
+                        input_frame.checked = item.frame;
+                        input_frame.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+                        
+                        var label_frame = document.createElement('label');
+                        form_options.appendChild(label_frame);
+                        label_frame.setAttribute('for',item.name + '-frame');
+                        label_frame.setAttribute('class','options_label');
+                        label_frame.innerHTML = "Frame";
+                        
+                        form_options.appendChild(document.createElement('br'));
+
+                        var input_loadonstartup = document.createElement('input');
+                        form_options.appendChild(input_loadonstartup);
+                        input_loadonstartup.setAttribute('type','checkbox');
+                        input_loadonstartup.setAttribute('name','loadonstartup');
+                        input_loadonstartup.setAttribute('value','loadonstartup');
+                        input_loadonstartup.setAttribute('id',item.name + '-loadonstartup');
+                        input_loadonstartup.checked = item.loadonstartup;
+                        input_loadonstartup.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+                        
+                        var label_loadonstartup = document.createElement('label');
+                        form_options.appendChild(label_loadonstartup);
+                        label_loadonstartup.setAttribute('for',item.name + '-loadonstartup');
+                        label_loadonstartup.setAttribute('class','options_label');
+                        label_loadonstartup.innerHTML = "LoadOnStartup";
+                        
+                        var td_icon = document.createElement('td');
+                        tr_item.appendChild(td_icon);
+                        td_icon.setAttribute('class','icon');
+                        
+                        var img_icon = document.createElement('img');
+                        td_icon.appendChild(img_icon);
+                        img_icon.setAttribute('class','icon');
+                        img_icon.setAttribute('src',SRAurl + '/SIMRacingApps/' + item.icon);
+                        img_icon.addEventListener('click',new Function('launch("'+item.name+'");')); 
+                        
+                        var td_text = document.createElement('td');
+                        tr_item.appendChild(td_text);
+                        
+                        var a_text  = document.createElement('a');
+                        td_text.appendChild(a_text);
+                        a_text.setAttribute('target','_blank');
+                        a_text.setAttribute('href',SRAurl + '/SIMRacingApps/' + item.doc);
+                        
+                        var div_text= document.createElement('div');
+                        a_text.appendChild(div_text);
+                        div_text.setAttribute('class','itemtext');
+                        div_text.innerHTML = item.name + '<br />';
+                        
+                        var div_desc= document.createElement('div');
+                        a_text.appendChild(div_desc);
+                        div_desc.setAttribute('class','itemdesc');
+                        div_desc.innerHTML = item.description;
+                    }
+                }
+                listingsTable.appendChild(listingsBody);
+            }
+        });
+        
+        //check for an update
+        var updateRequest = new XMLHttpRequest();
+        updateRequest.onreadystatechange = function() {
+            if (updateRequest.readyState == 4 && updateRequest.status == 200) {
+	            var version = JSON.parse(updateRequest.responseText);
+	            console.log("SIMRacingApps.com/version.json: " + JSON.stringify(version));
+	            websiteVersion = version;
+	            checkForUpdate();
+            }
+        }
+        updateRequest.open("GET",'http://SIMRacingApps.com/version.json');
+        updateRequest.send();
+
+        function checkForUpdate() {
+            //we can't check until both servers have responed
+            if (serverVersion.major && websiteVersion.major) {
+                var build = "";
+                var websiteBuild = "";
+                var a = websiteVersion.build.split(/[-.]/);
+                
+                for (var i=0;i < a.length;i++) {
+                    if (a[i].match(/[0-9]/))
+                        websiteBuild += a[i];
+                }
+                
+                websiteBuild *= 1;
+                
+                a = serverVersion.build.split(/[-.]/);
+                
+                for (var i=0;i < a.length;i++) {
+                    if (a[i].match(/[0-9]/))
+                        build += a[i];
+                }
+                
+                build *= 1;
+                
+                if (serverVersion.major <  websiteVersion.major
+                || (serverVersion.major == websiteVersion.major && serverVersion.minor <  websiteVersion.minor)
+                || (serverVersion.major == websiteVersion.major && serverVersion.minor == websiteVersion.minor && build < websiteBuild)
+                //|| true
+                ) {
+                    var updateString = "(UPDATE Available: "+websiteVersion.major+"."+websiteVersion.minor+"-"+websiteVersion.build+")<br />";
+                    document.getElementById("update").innerHTML = updateString;
+                }
+            }
+        };
+        
+    </script>
+</body>
+</html>
