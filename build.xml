@@ -48,7 +48,7 @@
     </target>
     <target name="deploy" depends="sra">
         <copy overwrite="true" file="${java.io.tmpdir}/electron-apps_${electron_version}.sra" todir="${deployment.dir}" />
-        <copy overwrite="true" file="_electron-apps-readme.txt" tofile="${deployment.dir}/electron-apps-readme.txt" />
+        <copy overwrite="true" file="README.md" tofile="${deployment.dir}/electron-apps-readme.txt" />
         <copy overwrite="true" todir="${deployment.dir}/electron-apps">
             <fileset dir=".">
                 <exclude name="build.xml" />
@@ -63,7 +63,7 @@
     <available file="${download.dir}/electron-apps_${electron_version}.sra" property="electron.exists" />
     <target name="release" depends="sra" unless="electron.exists">
         <copy overwrite="true" file="package.json" tofile="${SIMRacingApps.github.io.location}/electron_package.json" />
-        <copy overwrite="true" file="_electron-apps-readme.txt" tofile="${download.dir}/electron-apps-readme.txt" />
+        <copy overwrite="true" file="README.md" tofile="${download.dir}/electron-apps-readme.txt" />
         <copy overwrite="false" file="${java.io.tmpdir}/electron-apps_${electron_version}.sra" todir="${download.dir}" />
         <echo message="Remember to move older versions to the archive folder" />
     </target>
