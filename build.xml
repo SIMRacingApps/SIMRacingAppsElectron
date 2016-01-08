@@ -1,4 +1,4 @@
-<project basedir="." default="sra" name="SIMRacingAppsElectron">
+<project basedir="." default="sra" name="SIMRacingApps-Electron">
     <tstamp>
         <format property="build.time" pattern="yyyy.MM.dd.HH.mm.ss" />
     </tstamp>
@@ -8,7 +8,11 @@
     <tstamp>
         <format property="build.year" pattern="yyyy" />
     </tstamp>
+    
     <property name="deployment.dir" value="${user.home}/Documents/SIMRacingApps" />
+    <property name="download.dir" value="X:/SIMRacingApps" />
+    <property name="SIMRacingApps.github.io.location" value="../SIMRacingApps.github.io" />
+    
     <loadresource property="electron.package.json">
         <concat>
             <fileset dir="." includes="package.json">
@@ -56,4 +60,12 @@
         </copy>
         <echo message="Deployed Electron-Apps ${electron_version} to ${deployment.dir}/electron-apps" />
     </target>
+    <available file="${download.dir}/electron-apps_${electron_version}.sra" property="electron.exists" />
+    <target name="release" depends="sra" unless="electron.exists">
+        <copy overwrite="true" file="package.json" tofile="${SIMRacingApps.github.io.location}/electron_package.json" />
+        <copy overwrite="true" file="_electron-apps-readme.txt" tofile="${download.dir}/electron-apps-readme.txt" />
+        <copy overwrite="false" file="${java.io.tmpdir}/electron-apps_${electron_version}.sra" todir="${download.dir}" />
+        <echo message="Remember to move older versions to the archive folder" />
+    </target>
+    
 </project>
