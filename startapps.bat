@@ -24,7 +24,8 @@ for /f "skip=2 tokens=2,*" %%A in ('reg.exe query "HKCU\Software\Microsoft\Windo
 %~d0
 cd %~dp0
 set ELECTRON_NO_ATTACH_CONSOLE=true
-if "x%ELECTRON%" == "x" set ELECTRON=%DOCUMENTS%SIMRacingApps\electron-apps\electron
+if "x%ELECTRON%" == "x" set ELECTRON=electron
+if not exist "%ELECTRON%\electron.exe" goto noelectron
 
 echo Atom/Electron Version
 type "%ELECTRON%\version"
@@ -32,4 +33,10 @@ echo.
 echo Starting: %*
 if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --disable-gpu . %*
 if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\electron.exe" --disable-gpu . %*
+goto end
+
+:noelectron
+echo "%ELECTRON%\electron.exe" was not found
+
+:end
 @ping -n 5 -w 1000 localhost >nul

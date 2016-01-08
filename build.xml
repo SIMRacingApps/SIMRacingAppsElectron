@@ -50,7 +50,7 @@
                 <exclude name="build.xml" />
                 <exclude name=".project" />
             </fileset>
-            <fileset dir="X:/">
+            <fileset dir=".">
                 <include name="electron/**" />
             </fileset>
         </copy>
