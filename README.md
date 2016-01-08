@@ -21,7 +21,7 @@ I created a Main Menu App, specifically for Electron, to provide the following c
 
 Installation:
 
-1. Download the [electron-apps_x.x.x.sra](https://github.com/SIMRacingApps/SIMRacinsAppsElectron/releases/latest) 
+1. Download the [electron-apps_x.x.x.sra](https://github.com/SIMRacingApps/SIMRacingAppsElectron/releases/latest) 
    file from the downloads link and just save it. 
 2. Then, with SIMRacingAppsServer.exe running, connect to the Main Menu using your browser.
 3. At the bottom of the menu, use the "Choose File" and "Upload" buttons and upload it.
