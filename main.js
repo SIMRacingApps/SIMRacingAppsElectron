@@ -148,7 +148,7 @@ function loadMain() {
         main = null;
     });
 
-    main.on('minimize',function(e) {
+    ipc.on('hide',function(e) {
         for (var i=0; i < windows.length; i++) {
             if (windows[i]) {
                 windows[i].hide();
@@ -156,7 +156,7 @@ function loadMain() {
         }
     });
 
-    main.on('restore',function(e) {
+    ipc.on('show',function(e) {
         for (var i=0; i < windows.length; i++) {
             if (windows[i]) {
                 windows[i].show();

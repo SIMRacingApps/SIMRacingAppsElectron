@@ -87,7 +87,7 @@
         #SRAconfigurationForm {
             text-align: left;
         }
-        .settings {
+        .settings-icon {
             width: 3%;
             min-width: 35px;
             min-height: 35px;
@@ -147,6 +147,8 @@
                          <input oninput="javascript:updateButtons();" type="text" id="SRAconfiguration" name="configuration" value="default">
                          <input onclick="javascript:saveConfiguration();" type="button" disabled="true" value="Create" name="save" id="save" />
                          <input onclick="javascript:deleteConfiguration();" type="button" disabled="true" value="Delete" name="delete" id="delete" />
+                         <input onclick="javascript:hideWindows();" type="button" value="Hide All" name="hide" id="hide" />
+                         <input onclick="javascript:showWindows();" type="button" value="Show All" name="show" id="show" />
                          <br />
                          <select id="configurations" name="configurations">
                               <option value="default">default</option>
@@ -154,7 +156,7 @@
                     </form>
                 </td>
                 <td>
-                    <a id="settings" href="javascript:launch('settings');"><img class="settings" src="resources/settings-icon.png" alt="Settings"></a>
+                    <a id="settings" href="javascript:launch('settings');"><img class="settings-icon" src="resources/settings-icon.png" alt="Settings"></a>
                 </td>
                 </tr>
                 </table>
@@ -194,6 +196,14 @@
         
         function launch(name) {
             ipc.send('loadApp',name);
+        }
+        
+        function hideWindows() {
+            ipc.send('hide');
+        }
+        
+        function showWindows() {
+            ipc.send('show');
         }
         
         function saveOptions(name) {
@@ -484,7 +494,15 @@
                 }
             }
         };
-        
+
+        var ga = new XMLHttpRequest();
+        ga.onreadystatechange = function() {
+            if (ga.readyState == 4 && ga.status == 200) {
+                var s=ga;
+            }
+        }
+        ga.open("POST",'http://www.google-analytics.com/collect?v=1&t=pageview&tid=UA-72478308-1&cid=55dc4aa0-7351-41e4-8a8e-fa769526474d&dh=localhost&dp=%2Felectron%2Fmenu&dt=SIMRacingApps');
+        ga.send();
     </script>
 </body>
 </html>
