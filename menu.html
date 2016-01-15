@@ -456,6 +456,14 @@
 	            console.log("SIMRacingApps.com/version.json: " + JSON.stringify(version));
 	            websiteVersion = version;
 	            checkForUpdate();
+	            var ga = new XMLHttpRequest();
+	            ga.onreadystatechange = function() {
+	                if (ga.readyState == 4 && ga.status == 200) {
+	                    var s=ga;
+	                }
+	            }
+	            ga.open("POST",'http://www.google-analytics.com/collect?v=1&t=pageview&tid=UA-72478308-1&cid=55dc4aa0-7351-41e4-8a8e-fa769526474d&dh=localhost&dp=%2Felectron%2Fmenu%2F'+encodeURI(version.major+'.'+version.minor+'_'+version.build)+'&dt=SIMRacingApps');
+	            ga.send();
             }
         }
         updateRequest.open("GET",'http://SIMRacingApps.com/version.json');
@@ -495,14 +503,6 @@
             }
         };
 
-        var ga = new XMLHttpRequest();
-        ga.onreadystatechange = function() {
-            if (ga.readyState == 4 && ga.status == 200) {
-                var s=ga;
-            }
-        }
-        ga.open("POST",'http://www.google-analytics.com/collect?v=1&t=pageview&tid=UA-72478308-1&cid=55dc4aa0-7351-41e4-8a8e-fa769526474d&dh=localhost&dp=%2Felectron%2Fmenu&dt=SIMRacingApps');
-        ga.send();
     </script>
 </body>
 </html>
