@@ -107,7 +107,7 @@ function loadMain() {
         height:         SRAlauncher.height,
         x:              SRAlauncher.x,
         y:              SRAlauncher.y,
-        title:          'SIMRacingAppsLauncher - ' + SRAlauncher.configuration,
+        title:          'SIMRacingAppsLauncher Electron ' + SRAlauncher.version + ' - ' + SRAlauncher.configuration,
         icon:           'resources/SRA-Logo-16x16.png',
         resizable:      true,
         alwaysOnTop:    false,
@@ -164,6 +164,11 @@ function loadMain() {
         }
     });
 
+    function S4() {
+        return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
+    };
+    var guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+    
     function loadConfiguration(configuration) {
         SRAlauncher.configuration = configuration;
         SRAlauncher.configurations[configuration] = true;
@@ -186,8 +191,46 @@ function loadMain() {
                 if (this.status == 200) {
                     var listings = JSON.parse(this.responseText);
                     listings.SRAlauncher = SRAlauncher;
-                    console.log("Server Version: " + JSON.stringify(listings.version));
                     
+                    var version = listings.version.major + '.' + listings.version.minor + '_' + listings.version.build;
+                    var title = main.SRAname + ' Electron ' + SRAlauncher.version + ', Server Version '+version;
+                    console.log(title + ' ' + guid);
+                    main.setTitle(title + ' - ' + SRAlauncher.configuration);
+
+                    var ga = new XMLHttpRequest();
+                    ga.onreadystatechange = function() {
+                        if (this.readyState == this.DONE) {
+                            if (this.status == 200) {
+                                var s=ga;
+                                console.log('ga sent: ');
+                            }
+                        }
+                    }
+                    var i18n = app.getLocale();
+                    
+                    var gaurl = 'http://www.google-analytics.com/collect';
+                    var gadata  = 'v=1';
+                        gadata += '&t=pageview';
+                        gadata += '&tid=UA-72478308-1';
+                        gadata += '&cid='+encodeURI(guid);
+                        //gadata += '&cid='+Date.now()+'.'+Date.now();
+                        gadata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
+                        gadata += '&dh=localhost';
+                        gadata += '&dp=%2Felectron%2Fmenu';
+                        gadata += '&av='+encodeURI(version);
+                        gadata += '&dt='+encodeURI(title);
+                        gadata += '&an=SIMRacingApps';
+                        gadata += '&ul='+encodeURI(i18n);
+                        gadata += '&ua='+encodeURI('Electron '+SRAlauncher.version+' Windows');
+                        gadata += '&z=' + Date.now(); 
+                        
+                    console.log(gaurl);
+                    console.log(gadata);
+                    ga.open("POST",gaurl+'?'+gadata);
+                    ga.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    ga.send();
+                    
+
                     for (var headeridx in listings.headers) {
                         var header = listings.headers[headeridx];
                         if (listings[header].length > 0) {
