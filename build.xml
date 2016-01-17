@@ -28,7 +28,7 @@
         property.setValue(package.version);
         property.perform();
     </script>
-    <echo message="electron-apps Version: ${electron_version}" />
+    <echo message="electron-apps Version_${electron_version}" />
 
     <target name="sra">
         <delete dir="${java.io.tmpdir}/electron-apps" />
@@ -66,6 +66,7 @@
         <copy overwrite="true" file="README.md" tofile="${download.dir}/electron-apps-readme.txt" />
         <copy overwrite="false" file="${java.io.tmpdir}/electron-apps_${electron_version}.sra" todir="${download.dir}" />
         <echo message="Remember to move older versions to the archive folder" />
+        <echo message="Remember to tag with Version_${electron_version} and push upstream" />
     </target>
     
 </project>
