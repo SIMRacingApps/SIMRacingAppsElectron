@@ -86,6 +86,10 @@
         }
         #SRAconfigurationForm {
             text-align: left;
+            float: left;
+        }
+        #settings {
+            width: 10%;
         }
         .settings-icon {
             width: 3%;
@@ -141,7 +145,7 @@
                 </td>
                 </tr>
                 <tr>
-                <td>
+                <td colspan="2">
                     <form id="SRAconfigurationForm" class="SRAconfigurationForm">
                          Configuration:<br />
                          <input oninput="javascript:updateButtons();" type="text" id="SRAconfiguration" name="configuration" value="default">
@@ -154,8 +158,6 @@
                               <option value="default">default</option>
                          </select>
                     </form>
-                </td>
-                <td>
                     <a id="settings" href="javascript:launch('settings');"><img class="settings-icon" src="resources/settings-icon.png" alt="Settings"></a>
                 </td>
                 </tr>
