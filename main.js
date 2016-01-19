@@ -36,7 +36,7 @@ app.on('window-all-closed', function() {
 
 var main;
 var windows = [];
-var delay = 5000;
+var delay = 0;
 var appsToLoad = {};
 var frame = false;
 var transparent = false;
@@ -57,6 +57,10 @@ for (var i=1;i < process.argv.length;i++) {
     else
     if (arg == "-port") {
         SRAlauncher.port = process.argv[++i];
+    }
+    else
+    if (arg == "-delay") {
+        delay = process.argv[++i];
     }
     else
     if (arg == "-storage" || arg == "-configuration") {
@@ -405,7 +409,7 @@ function createAppWindow(SRAapp) {
     //I'm going to create the window 1 pixel too big, as sometimes that causing the transparency to kick in
     //when it gets resized.
     if (options.transparent) {
-        options.height = SRAapp.height + 1;
+        options.height = SRAapp.height + 2;
     }
     
     console.log("creating BrowserWindow() = " + JSON.stringify(options));
@@ -430,7 +434,7 @@ function createAppWindow(SRAapp) {
     //wait to restore it, because for some reason the transparency will not
     //function until the webview is loaded.
     //TODO: can I get it to send me an event?
-    if (options.transparent)
+    if (options.transparent && delay > 0)
         setTimeout(function() {
             if (false) {
                 win.setBounds({
