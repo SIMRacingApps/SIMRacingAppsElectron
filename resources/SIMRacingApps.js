@@ -74,13 +74,31 @@ var SRAreturnFalse = function() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log(SIMRacingAppsConfig.src);
     document.title = SIMRacingAppsConfig.app;
-    document.getElementById("webviewelement").setAttribute('src',SIMRacingAppsConfig.src);
     document.getElementById("bar").onmouseover = SRAonMouseOver;
     document.getElementById("bar").onmouseout  = SRAonMouseOut;
     document.getElementById("closer").onmouseover = SRAonMouseOver;
     document.getElementById("closer").onmouseout  = SRAonMouseOut;
     document.getElementById("closer").onmousedown = SRAcloser;
     document.getElementById("closer").onselectstart = SRAreturnFalse;
+    var w = document.getElementById("webviewelement");
+    w.addEventListener("did-finish-load", function() {
+        console.log("webview(did-finish-load)");
+        var x = w.executeJavaScript(
+                "console.log('inside webview');"
+//            +   "var a = document.getElementById('SIMRacingApps-App');"
+//            +   "console.log('app='+JSON.stringify(a.style[0]));"
+//            +   "const electron = require('electron');"
+//            +   "console.log('electron='+electron);"
+        );
+    });
+    w.addEventListener("dom-ready", function() {
+        console.log("webview(dom-ready)");
+    });
+    w.addEventListener("console-message",function(e) {
+        console.log("webview(console-message)="+e.message);
+    });
+    w.setAttribute('src',SIMRacingAppsConfig.src);
+    
 });
 
 
