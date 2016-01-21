@@ -2,6 +2,8 @@ Atom/Electron is a platform for running SIMRacingApps (SRA) without a browser.
 It combines the Chromium Webkit, V8 JavaScripting Engine, and Node.js
 modules to provide runtime support for Apps written in JavaScript/HTML5.
 
+Looking for the newest version, click [here](https://github.com/SIMRacingApps/SIMRacingAppsElectron/releases/latest).
+
 I created a Main Menu App, specifically for Electron, to provide the following capabilities:
 
 1. Automatically load specified Apps on startup.
