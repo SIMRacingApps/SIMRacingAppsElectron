@@ -2,7 +2,7 @@
 if "x%1" == "x-?" (
     echo Usage: startapps [-hostname host] [-port port] [-storage folder] [-frame] [-transparent] [-backgroundColor color] [app] [app...]
     echo Defaults:
-    echo    host            = localhost
+    echo    hostname        = localhost
     echo    port            = 80
     echo    storage         = default
     echo    frame           = no
@@ -26,6 +26,10 @@ cd %~dp0
 set ELECTRON_NO_ATTACH_CONSOLE=true
 if "x%ELECTRON%" == "x" set ELECTRON=electron
 if not exist "%ELECTRON%\electron.exe" goto noelectron
+
+@rem make sure these exist. Could be starting before server or on stand alone PC, LapTop or Tablet
+@mkdir %DOCUMENTS%\SIMRacingApps 2>nul
+@mkdir %DOCUMENTS%\SIMRacingApps\storage 2>nul
 
 echo Atom/Electron Version
 type "%ELECTRON%\version"
