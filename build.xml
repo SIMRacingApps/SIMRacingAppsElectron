@@ -40,9 +40,6 @@
                 <exclude name="build.xml" />
                 <exclude name=".project" />
             </fileset>
-            <fileset dir="X:/">
-                <include name="electron/**" />
-            </fileset>
         </copy>
         <zip destfile="${java.io.tmpdir}/electron-apps_${electron_version}.sra" basedir="${java.io.tmpdir}/electron-apps" />
     </target>
