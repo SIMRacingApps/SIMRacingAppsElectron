@@ -493,7 +493,7 @@
 //websiteVersion.minor = 1;
 //websiteVersion.build = "2016.05.01";
 //websiteBETAVersion.major = 1;                    
-//websiteBETAVersion.minor = 1;
+//websiteBETAVersion.minor = 0;
 //websiteBETAVersion.build = "RC-2016.05.15";
                 serverVersion.major *= 1;
                 serverVersion.minor *= 1;
@@ -543,6 +543,7 @@
                 ) {
                     var updateString = "(Server UPDATE Available: "+websiteBETAVersion.major+"."+websiteBETAVersion.minor+"-"+websiteBETAVersion.build+")";
                     document.getElementById("update").innerHTML = updateString + "<br />";
+                    document.getElementById("update").href = "http://github.com/SIMRacingApps/SIMRacingApps/releases";
                 }
             }
         };
