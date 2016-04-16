@@ -193,6 +193,7 @@
     <script type="text/javascript">
         const ipc = require('electron').ipcRenderer;
         var websiteVersion = {};
+        var websiteBETAVersion = {};
         var serverVersion = {};
         var SRAlauncher = {};
         
@@ -469,36 +470,79 @@
         updateRequest.open("GET",'http://SIMRacingApps.com/version.json');
         updateRequest.send();
 
+        //check for an update
+        var updateBETARequest = new XMLHttpRequest();
+        updateBETARequest.onreadystatechange = function() {
+            if (updateBETARequest.readyState == 4 && updateBETARequest.status == 200) {
+	            var BETAversion = JSON.parse(updateBETARequest.responseText);
+	            console.log("SIMRacingApps.com/BETA-version.json: " + JSON.stringify(BETAversion));
+	            websiteBETAVersion = BETAversion;
+	            checkForUpdate();
+            }
+        }
+        updateBETARequest.open("GET",'http://SIMRacingApps.com/BETA-version.json');
+        updateBETARequest.send();
+
         function checkForUpdate() {
             //we can't check until both servers have responed
-            if (serverVersion.major && websiteVersion.major) {
-                var build = "";
+            if (serverVersion.major && websiteVersion.major && websiteBETAVersion.major) {
+//serverVersion.major = 1;                    
+//serverVersion.minor = 1;
+//serverVersion.build = "BETA-2016.04.01";
+//websiteVersion.major = 1;                    
+websiteVersion.minor = 1;
+//websiteVersion.build = "2016.05.01";
+//websiteBETAVersion.major = 1;                    
+//websiteBETAVersion.minor = 1;
+//websiteBETAVersion.build = "RC-2016.05.15";
+                serverVersion.major *= 1;
+                serverVersion.minor *= 1;
+                websiteVersion.major *= 1;
+                websiteVersion.minor *= 1;
+                websiteBETAVersion.major *= 1;
+                websiteBETAVersion.minor *= 1;
+                
+                var versionString = "Version: "+serverVersion.major+"."+serverVersion.minor+"-"+serverVersion.build;
+                var websiteBETABuild = "";
+                var a = websiteBETAVersion.build.split(/[-.]/);
+                for (var i=0;i < a.length;i++) {
+                    if (a[i].match(/[0-9]/))
+                        websiteBETABuild += "" + a[i];
+                }
+                websiteBETABuild *= 1;
+                
                 var websiteBuild = "";
                 var a = websiteVersion.build.split(/[-.]/);
-                
                 for (var i=0;i < a.length;i++) {
                     if (a[i].match(/[0-9]/))
-                        websiteBuild += a[i];
+                        websiteBuild += "" + a[i];
                 }
-                
                 websiteBuild *= 1;
                 
+                var build = "";
                 a = serverVersion.build.split(/[-.]/);
-                
                 for (var i=0;i < a.length;i++) {
                     if (a[i].match(/[0-9]/))
-                        build += a[i];
+                        build += "" + a[i];
                 }
-                
                 build *= 1;
-                
+                 
+                //if the main version on the website is newer, post it as the update
                 if (serverVersion.major <  websiteVersion.major
                 || (serverVersion.major == websiteVersion.major && serverVersion.minor <  websiteVersion.minor)
                 || (serverVersion.major == websiteVersion.major && serverVersion.minor == websiteVersion.minor && build < websiteBuild)
-                //|| true
                 ) {
-                    var updateString = "(UPDATE Available: "+websiteVersion.major+"."+websiteVersion.minor+"-"+websiteVersion.build+")<br />";
-                    document.getElementById("update").innerHTML = updateString;
+                    var updateString = "(Server UPDATE Available: "+websiteVersion.major+"."+websiteVersion.minor+"-"+websiteVersion.build+")";
+                    document.getElementById("update").innerHTML = updateString + "<br />";
+                }
+                else //if this is a BETA/RC version, then post the new BETA/RC as the update
+                if ((serverVersion.build.match(/^BETA-/) || serverVersion.build.match(/^RC-/))
+                && (serverVersion.major <  websiteBETAVersion.major
+                || (serverVersion.major == websiteBETAVersion.major        && serverVersion.minor <  websiteBETAVersion.minor)
+                || (serverVersion.major == websiteBETAVersion.major        && serverVersion.minor == websiteBETAVersion.minor && build < websiteBETABuild))
+                ) {
+                    var updateString = "(Server UPDATE Available: "+websiteBETAVersion.major+"."+websiteBETAVersion.minor+"-"+websiteBETAVersion.build+")";
+                    document.getElementById("update").innerHTML = updateString + "<br />";
                 }
             }
         };
