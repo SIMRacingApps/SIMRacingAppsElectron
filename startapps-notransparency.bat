@@ -1,6 +1,3 @@
-@rem This file is the same as startapps.bat with the default delay set to 2000ms.
-@rem Use it if you need a delay to get the transparency to work.
-
 @echo off
 if "x%1" == "x-?" (
     echo Usage: startapps [-hostname host] [-port port] [-storage folder] [-frame] [-transparent] [-backgroundColor color] [app] [app...]
@@ -8,7 +5,7 @@ if "x%1" == "x-?" (
     echo    hostname        = localhost
     echo    port            = 80
     echo    storage         = default
-    echo    delay           = 2000
+    echo    delay           = 0
     echo    frame           = no
     echo    transparent     = no
     echo    backgroundColor = none or transparent if transparent flag is set
@@ -39,8 +36,8 @@ echo Atom/Electron Version
 type "%ELECTRON%\version"
 echo.   
 echo Starting: %*
-if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --disable-gpu . -delay 2000 %*
-if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\electron.exe" --disable-gpu . -delay 2000 %*
+if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --disable-gpu . %*
+if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\electron.exe" --disable-gpu . %*
 goto end
 
 :noelectron
