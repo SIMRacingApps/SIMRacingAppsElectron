@@ -2,7 +2,7 @@ Atom/Electron is a platform for running SIMRacingApps (SRA) without a browser.
 It combines the Chromium Webkit, V8 JavaScripting Engine, and Node.js
 modules to provide runtime support for Apps written in JavaScript/HTML5.
 
-Looking for the newest version, click [here](https://github.com/SIMRacingApps/SIMRacingAppsElectron/releases/latest).
+To download the newest version, click [here](https://github.com/SIMRacingApps/SIMRacingAppsElectron/releases/latest).
 
 I created a Main Menu App, specifically for Electron, to provide the following capabilities:
 
@@ -12,7 +12,7 @@ I created a Main Menu App, specifically for Electron, to provide the following c
 3. Run Apps with or without a frame (i.e. the borders around the window and title bar)
 4. Run Apps with a transparent background. (This may cause FPS slow down on some older systems).
 5. Resize and Move the App and it will remember where you put it.
-6. Create your own dashes on Window's Tablets or Laptops that are not you SIM PC. See instructions below.
+6. Create your own dashes on Window's Tablets or Laptops that are not your SIM PC. See instructions below.
 7. Make the App Windows stay on top of all other windows, including the SIM.<br />
    !!! NOTE: The SIM has to be running in Windowed Mode (See Below on how to configure).
    If Windowed Mode causes problems for you, try using the [Overwolf-SIMRacingAppsLauncher Client](https://github.com/SIMRacingApps/SIMRacingAppsOverwolf) instead of Electron-Apps.
@@ -72,8 +72,9 @@ If you want to find out more about Atom/Electron, check out the very active repo
 ## iRacing can be configured to run in Windowed Mode and still be full screen.
 
 To do this, in your Documents\iRacing\app.ini file, 
-set the following variables in the [graphics] section. 
+set the following variables in the [Graphics] or [Graphics DX11] sections. 
 Please keep a backup copy of this file before you change it for reference.
+This example is for 1 monitor.
 
 1. fullScreen=0                   ;0=windowed mode, 1=full screen mode (other variables are not used in full screen mode)
 1. border=0                       ;0=no borders or header, 1=header visible.
@@ -83,5 +84,9 @@ Please keep a backup copy of this file before you change it for reference.
 1. windowedYPos=0                 ;locate the window on the display you want it maximized on.
 1. windowedWidth=1920             ;optional, will only be used if not maximized. Set to your dimension.
 1. windowedHeight=1080            ;optional, will only be used if not maximized. Set to your dimension.
+
+Also in the [Audio] section.
+
+1. muteWhenFocusLost=0            ; set this to 0 to hear sim sounds when another program has the keyboard focus
 
 
