@@ -3,10 +3,11 @@
 
 @echo off
 if "x%1" == "x-?" (
-    echo Usage: startapps [-hostname host] [-port port] [-storage folder] [-frame] [-transparent] [-backgroundColor color] [app] [app...]
+    echo Usage: startapps [-hostname host] [-port port] [-lang language_country] [-storage folder] [-frame] [-transparent] [-backgroundColor color] [app] [app...]
     echo Defaults:
     echo    hostname        = localhost
     echo    port            = 80
+    echo    lang            = language or language_COUNTRY
     echo    storage         = default
     echo    delay           = 2000
     echo    frame           = no

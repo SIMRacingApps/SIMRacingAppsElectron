@@ -34,10 +34,11 @@ I created a Main Menu App, specifically for Electron, to provide the following c
   2. That's it. Name the shortcut whatever you want and click OK.
      Now you can run the shortcut and it will be using the default configuration.
 5. Optionally, you can modify the shortcut and add the following options to override the defaults. Or you can create multiple shortcuts to launch different configurations.
-  1. Usage: startapps.bat \[-hostname {host}] \[-port {port}] \[-configuration "{configuration}"] \[-delay {milliseconds}]
+  1. Usage: startapps.bat \[-hostname {host}] \[-port {port}] \[-lang {lang_country}] \[-configuration "{configuration}"] \[-delay {milliseconds}]
     1. Defaults are:
       1.   host            = localhost    ;Where SRA Server is running
       2.   port            = 80           ;What port SRA Server is running on
+      3.   lang            = language     ;languageCode or languageCode_COUNTRY_CODE
       3.   configuration   = default      ;The name of configuration to save App locations and sizes to.
       4.   delay           = 0            ;The amount of time to allow the widget to load before applying transparency. Some systems need a 5000 ms delay to get transparency to work.
 

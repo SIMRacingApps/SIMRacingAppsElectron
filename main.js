@@ -15,6 +15,7 @@ if (defaultStorage.getItem("SIMRacingAppsLauncher"))
 
 SRAlauncher.hostname       = SRAlauncher.hostname       || 'localhost';
 SRAlauncher.port           = SRAlauncher.port           || 80;
+SRAlauncher.lang           = SRAlauncher.lang           || null;
 SRAlauncher.configuration  = SRAlauncher.configuration  || 'default';
 SRAlauncher.configurations = SRAlauncher.configurations || {'default':true};
 SRAlauncher.x              = typeof(SRAlauncher.x) != 'undefined' ? SRAlauncher.x : 0;
@@ -57,6 +58,10 @@ for (var i=1;i < process.argv.length;i++) {
     else
     if (arg == "-port") {
         SRAlauncher.port = process.argv[++i];
+    }
+    else
+    if (arg == "-lang") {
+        SRAlauncher.lang = process.argv[++i];
     }
     else
     if (arg == "-delay") {
@@ -419,6 +424,7 @@ function createAppWindow(SRAapp) {
     var url = 'file://' + app.getAppPath() + '/appcontainer.html'
     + '?hostname=' + SRAlauncher.hostname
     + '&port='     + SRAlauncher.port
+    + (SRAlauncher.lang == null ? '' : '&lang=' + SRAlauncher.lang)
     + '&url='      + encodeURIComponent(SRAapp.url  || '')
     + '&app='      + encodeURIComponent(SRAapp.name || '')
     +  (SRAapp.args ? '&'+SRAapp.args : '')
