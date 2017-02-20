@@ -41,6 +41,7 @@
                 <exclude name=".project" />
             </fileset>
         </copy>
+        <delete file="${java.io.tmpdir}/electron-apps.sra" />
         <zip destfile="${java.io.tmpdir}/electron-apps.sra" basedir="${java.io.tmpdir}/electron-apps" />
     </target>
     <target name="deploy" depends="sra">
