@@ -10,7 +10,7 @@
     </tstamp>
     
     <property name="deployment.dir" value="${user.home}/Documents/SIMRacingApps" />
-    <property name="download.dir" value="X:/SIMRacingApps" />
+    <property name="download.dir" value="O:/OneDrive/SIMRacingApps" />
     <property name="SIMRacingApps.github.io.location" value="../SIMRacingApps.github.io" />
     
     <loadresource property="electron.package.json">
