@@ -40,7 +40,7 @@ echo Atom/Electron Version
 type "%ELECTRON%\version"
 echo.   
 echo Starting: %*
-if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --disable-gpu . -delay 2000 %*
+if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --enable-logging --disable-gpu . -delay 2000 %*
 if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\electron.exe" --disable-gpu . -delay 2000 %*
 goto end
 

@@ -147,7 +147,6 @@
                 <tr>
                 <td colspan="2">
                     <form id="SRAconfigurationForm" class="SRAconfigurationForm">
-                         Configuration:<br />
                          <input oninput="javascript:updateButtons();" type="text" id="SRAconfiguration" name="configuration" value="default">
                          <input onclick="javascript:saveConfiguration();" type="button" disabled="true" value="Create" name="save" id="save" />
                          <input onclick="javascript:deleteConfiguration();" type="button" disabled="true" value="Delete" name="delete" id="delete" />
@@ -323,19 +322,32 @@
             updateButtons();
             
             serverVersion = items.version;
+            serverVersion.translations = serverVersion.translations || {};
             console.log("listings: " + JSON.stringify(serverVersion));
 
-            document.getElementById("version").innerHTML = 'Server Version: ' 
+            document.getElementById("version").innerHTML = (serverVersion.translations.SERVERVERSION || 'Server Version')+': ' 
                                                          + serverVersion.major 
                                                          + '.' + serverVersion.minor 
                                                          + "_" + serverVersion.build;
             //document.getElementById("userPath").innerHTML = serverVersion.userpath;
             document.getElementById("copyright").href     = SRAurl + serverVersion.copyrightUrl;
+            document.getElementById("copyright").innerHTML= serverVersion.translations.COPYRIGHT || 'Copyright';
             document.getElementById("license").href       = SRAurl + serverVersion.licenseUrl;
+            document.getElementById("license").innerHTML  = serverVersion.translations.LICENSE || 'License';
             document.getElementById("notice").href        = SRAurl + serverVersion.noticeUrl;
+            document.getElementById("notice").innerHTML   = serverVersion.translations.NOTICE || 'Notice';
             document.getElementById("releasenotes").href  = SRAurl + serverVersion.releasenotes;
-            document.getElementById("electron_version").innerHTML = 'Electron-Apps Version: ' + items.SRAlauncher.version;
-            document.getElementById("SRAurl").innerHTML   = "Server URL: "+SRAurl;
+            document.getElementById("releasenotes").innerHTML=serverVersion.translations.RELEASENOTES || 'Release Notes';
+            document.getElementById("electron_version").innerHTML = 'Electron-Apps '+(serverVersion.translations.VERSION||'Version')+': ' + items.SRAlauncher.version;
+            document.getElementById("SRAurl").innerHTML   = (serverVersion.translations.SERVERURL||'Server URL')+": "+SRAurl;
+            
+            //now translate the buttons
+            document.getElementById("SRAconfigurationForm").innerHTML = (serverVersion.translations.CONFIGURATION || 'Configuration')+": <br />" + document.getElementById("SRAconfigurationForm").innerHTML;
+            document.getElementById("save").value         = serverVersion.translations.CREATE || 'Create';
+            document.getElementById("delete").value       = serverVersion.translations.DELETE || 'Delete';
+            document.getElementById("hide").value         = serverVersion.translations.HIDEALL || 'Hide All';
+            document.getElementById("show").value         = serverVersion.translations.SHOWALL || 'Show All';
+            
             checkForUpdate();
             
             var listingsTable = document.getElementById("listingsTable");
@@ -354,7 +366,7 @@
                     var td_header = document.createElement('td');
                     td_header.setAttribute('class','header');
                     td_header.setAttribute('colspan','3');
-                    td_header.innerHTML = header;
+                    td_header.innerHTML = serverVersion.translations[header] || header;
                     tr_header.appendChild(td_header);
                     
                     listingsBody.appendChild(tr_header);
@@ -388,7 +400,7 @@
                         form_options.appendChild(label_transparent);
                         label_transparent.setAttribute('for',item.name + '-transparent');
                         label_transparent.setAttribute('class','options_label');
-                        label_transparent.innerHTML = "Transparent";
+                        label_transparent.innerHTML = serverVersion.translations.TRANSPARENT || "Transparent";
                         
                         form_options.appendChild(document.createElement('br'));
 
@@ -405,7 +417,7 @@
                         form_options.appendChild(label_frame);
                         label_frame.setAttribute('for',item.name + '-frame');
                         label_frame.setAttribute('class','options_label');
-                        label_frame.innerHTML = "Frame";
+                        label_frame.innerHTML = serverVersion.translations.FRAME || "Frame";
                         
                         form_options.appendChild(document.createElement('br'));
 
@@ -422,7 +434,7 @@
                         form_options.appendChild(label_loadonstartup);
                         label_loadonstartup.setAttribute('for',item.name + '-loadonstartup');
                         label_loadonstartup.setAttribute('class','options_label');
-                        label_loadonstartup.innerHTML = "LoadOnStartup";
+                        label_loadonstartup.innerHTML = serverVersion.translations.LOADONSTARTUP || "LoadOnStartup";
                         
                         var td_icon = document.createElement('td');
                         tr_item.appendChild(td_icon);

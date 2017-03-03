@@ -5,7 +5,6 @@ const electron       = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 const ipc = electron.ipcMain;
-
 var storagePath = app.getPath('documents')+'\\SIMRacingApps\\storage\\';
 var defaultStorage = new LocalStorage(storagePath + 'default');
 
@@ -18,8 +17,8 @@ SRAlauncher.port           = SRAlauncher.port           || 80;
 SRAlauncher.lang           = SRAlauncher.lang           || null;
 SRAlauncher.configuration  = SRAlauncher.configuration  || 'default';
 SRAlauncher.configurations = SRAlauncher.configurations || {'default':true};
-SRAlauncher.x              = typeof(SRAlauncher.x) != 'undefined' ? SRAlauncher.x : 0;
-SRAlauncher.y              = typeof(SRAlauncher.y) != 'undefined' ? SRAlauncher.y : 0;
+SRAlauncher.x              = SRAlauncher.x               ? SRAlauncher.x : 0;
+SRAlauncher.y              = SRAlauncher.y               ? SRAlauncher.y : 0;
 SRAlauncher.width          = SRAlauncher.width          || 800;
 SRAlauncher.height         = SRAlauncher.height         || 680;
 SRAlauncher.version        = app.getVersion()+" ("+process.versions.electron+")";
@@ -195,13 +194,16 @@ function loadMain() {
         }
         
         var request = new XMLHttpRequest();
+        var i18n = SRAlauncher.lang ? SRAlauncher.lang : app.getLocale().toLowerCase();
+        console.log('i18n = ' + i18n);
+        
         request.onreadystatechange = function(e) {
             if (this.readyState == this.DONE) {
                 if (this.status == 200) {
                     var listings = JSON.parse(this.responseText);
                     listings.SRAlauncher = SRAlauncher;
                     
-                    var version = listings.version.major + '.' + listings.version.minor + '_' + listings.version.build;
+                    var version = listings.version.major + '.' + listings.version.minor + '_' + listings.version.build + ' [' + i18n + ']';
                     var title = main.SRAname + ' Electron ' + SRAlauncher.version + ', Server Version '+version;
                     console.log(title + ' ' + guid);
                     main.setTitle(title + ' - ' + SRAlauncher.configuration);
@@ -215,7 +217,6 @@ function loadMain() {
                             }
                         }
                     }
-                    var i18n = app.getLocale();
                     
                     var gaurl = 'http://www.google-analytics.com/collect';
                     var gadata  = 'v=1';
@@ -256,11 +257,15 @@ function loadMain() {
                                         if (state) {
                                             item.x             = typeof(state.x) === 'undefined' ? item.x : state.x;
                                             item.y             = typeof(state.y) === 'undefined' ? item.y : state.y;
-                                            item.width         = state.width  || item.width;
-                                            item.height        = state.height || item.height;
+                                            item.width         = (state.width  || item.width) * 1;
+                                            item.height        = (state.height || item.height) * 1;
                                             item.transparent   = typeof(state.transparent)   === 'undefined' ? item.transparent   : state.transparent;
                                             item.frame         = typeof(state.frame)         === 'undefined' ? item.frame         : state.frame;
                                             item.loadonstartup = typeof(state.loadonstartup) === 'undefined' ? item.loadonstartup : state.loadonstartup;
+                                            if (item.width < 0)
+                                                item.width = 800;
+                                            if (item.height < 0)
+                                                item.height = 480;
                                         }
                                     }
                                     localStorage.setItem(item.name,JSON.stringify(item));
@@ -272,11 +277,15 @@ function loadMain() {
                                         if (state) {
                                             item.x             = typeof(state.x) === 'undefined' ? item.x : state.x;
                                             item.y             = typeof(state.y) === 'undefined' ? item.y : state.y;
-                                            item.width         = state.width  || item.width;
-                                            item.height        = state.height || item.height;
+                                            item.width         = (state.width  || item.width) * 1;
+                                            item.height        = (state.height || item.height) * 1;
                                             item.transparent   = typeof(state.transparent)   === 'undefined' ? item.transparent   : state.transparent;
                                             item.frame         = typeof(state.frame)         === 'undefined' ? item.frame         : state.frame;
                                             item.loadonstartup = typeof(state.loadonstartup) === 'undefined' ? item.loadonstartup : state.loadonstartup;
+                                            if (item.width < 0)
+                                                item.width = 800;
+                                            if (item.height < 0)
+                                                item.height = 480;
                                         }
                                     }
                                     localStorage.setItem(item.name,JSON.stringify(item));
@@ -293,7 +302,7 @@ function loadMain() {
                 }
             }
         }
-        request.open("GET","http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/listings");
+        request.open("GET","http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/listings?lang="+i18n);
         request.send();
     }
     
@@ -337,10 +346,10 @@ function loadMain() {
     function loadApp(SRAapp) {
         var options = {
                 name:        SRAapp.name,
-                x:           SRAapp.x,
-                y:           SRAapp.y,
-                width:       SRAapp.width,
-                height:      SRAapp.height,
+                x:           SRAapp.x || 0,
+                y:           SRAapp.y || 0,
+                width:       SRAapp.width || 800,
+                height:      SRAapp.height || 480,
                 url:         SRAapp.url,
                 frame:       SRAapp.frame, 
                 transparent: SRAapp.transparent, 
@@ -399,8 +408,8 @@ function createAppWindow(SRAapp) {
     var options = {
             width:          SRAapp.width  || 800, 
             height:         SRAapp.height || 480,
-            x:              typeof(SRAapp.x) === 'undefined' ? 0 : SRAapp.x,
-            y:              typeof(SRAapp.y) === 'undefined' ? 0 : SRAapp.y,
+            x:              SRAapp.x ? SRAapp.x : 0,
+            y:              SRAapp.y ? SRAapp.y : 0,
             title:          SRAapp.name,
             icon:           'resources/SRA-Logo-16x16.png',
             autoHideMenuBar:SRAapp.frame ? true : false,
@@ -410,6 +419,14 @@ function createAppWindow(SRAapp) {
             frame:          SRAapp.frame || false,
             transparent:    SRAapp.transparent || false
         };
+    
+    //sync SRAapp with options
+    SRAapp.width = options.width;
+    SRAapp.height = options.height;
+    SRAapp.x = options.x;
+    SRAapp.y = options.y;
+    SRAapp.frame = options.frame;
+    SRAapp.transparent = options.transparent;
     
     //I'm going to create the window 1 pixel too big, as sometimes that causing the transparency to kick in
     //when it gets resized.
@@ -452,14 +469,18 @@ function createAppWindow(SRAapp) {
 //                win.setBackgroundColor('#00000000');
             }
             else {
-                if (options.useContentSize)
-                    win.setContentSize(SRAapp.width,SRAapp.height);
-                else
-                    win.setSize(SRAapp.width,SRAapp.height);
+                if (options.useContentSize) {
+                    console.log('setContentSize('||SRAapp.width||','||SRAapp.height||')');
+                    win.setContentSize(SRAapp.width < 0 ? 800 : (SRAapp.width || 800),SRAapp.height < 0 ? 480 : (SRAapp.height || 480));
+                }
+                else {
+                    console.log('setSize('||SRAapp.width||','||SRAapp.height||')');
+                    win.setSize(SRAapp.width || 800,SRAapp.height || 480);
 //                setTimeout(function() {
 //                    win.setPosition(SRAbounds.x,SRAbounds.y);
                     //win.setBounds(SRAbounds);
 //                },delay);
+                }
             }
         },delay);
     
