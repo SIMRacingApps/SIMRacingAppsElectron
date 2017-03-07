@@ -14,7 +14,7 @@ if (defaultStorage.getItem("SIMRacingAppsLauncher"))
 
 SRAlauncher.hostname       = SRAlauncher.hostname       || 'localhost';
 SRAlauncher.port           = SRAlauncher.port           || 80;
-SRAlauncher.lang           = SRAlauncher.lang           || null;
+SRAlauncher.lang           = null;
 SRAlauncher.configuration  = SRAlauncher.configuration  || 'default';
 SRAlauncher.configurations = SRAlauncher.configurations || {'default':true};
 SRAlauncher.x              = SRAlauncher.x               ? SRAlauncher.x : 0;
