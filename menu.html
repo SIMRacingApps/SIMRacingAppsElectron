@@ -153,7 +153,7 @@
                          <input onclick="javascript:hideWindows();" type="button" value="Hide All" name="hide" id="hide" />
                          <input onclick="javascript:showWindows();" type="button" value="Show All" name="show" id="show" />
                          <br />
-                         <select id="configurations" name="configurations">
+                         <select onchange="javascript:configurationChange();" id="configurations" name="configurations">
                               <option value="default">default</option>
                          </select>
                     </form>
@@ -290,6 +290,15 @@
             }
         }
 
+        function configurationChange(e) {
+            var theinput = document.getElementById("SRAconfiguration");
+            var thelist  = document.getElementById("configurations");
+            var idx = e.target.selectedIndex;
+            var content = thelist.options[idx].innerHTML;
+            theinput.value = content;
+            saveConfiguration();
+        }
+        
         ipc.on('listings',function(e,items) {
             var SRAurl = "http://"+items.SRAlauncher.hostname + (items.SRAlauncher.port == 80 ? "" : ":" + items.SRAlauncher.port);
             
@@ -300,14 +309,7 @@
             datalist = document.createElement("select");
             datalist.setAttribute("id","configurations");
             datalist.setAttribute("name","configurations");
-            datalist.addEventListener('change',function(e) {
-                var theinput = document.getElementById("SRAconfiguration");
-                var thelist  = document.getElementById("configurations");
-                var idx = e.target.selectedIndex;
-                var content = thelist.options[idx].innerHTML;
-                theinput.value = content;
-                saveConfiguration();
-            },false);
+            datalist.addEventListener('change',configurationChange,false);
             var selectedIndex = 0;
             for (var configuration in SRAlauncher.configurations) {
                 var option = document.createElement("option");
@@ -328,7 +330,8 @@
             document.getElementById("version").innerHTML = (serverVersion.translations.SERVERVERSION || 'Server Version')+': ' 
                                                          + serverVersion.major 
                                                          + '.' + serverVersion.minor 
-                                                         + "_" + serverVersion.build;
+                                                         + "_" + serverVersion.build
+                                                         + " [" + items.lang + "]";
             //document.getElementById("userPath").innerHTML = serverVersion.userpath;
             document.getElementById("copyright").href     = SRAurl + serverVersion.copyrightUrl;
             document.getElementById("copyright").innerHTML= serverVersion.translations.COPYRIGHT || 'Copyright';
@@ -342,7 +345,14 @@
             document.getElementById("SRAurl").innerHTML   = (serverVersion.translations.SERVERURL||'Server URL')+": "+SRAurl;
             
             //now translate the buttons
-            document.getElementById("SRAconfigurationForm").innerHTML = (serverVersion.translations.CONFIGURATION || 'Configuration')+": <br />" + document.getElementById("SRAconfigurationForm").innerHTML;
+            if (!document.getElementById("SRAconfigurationForm").innerHTML.startsWith(serverVersion.translations.CONFIGURATION)) {
+                document.getElementById("SRAconfigurationForm").innerHTML = (serverVersion.translations.CONFIGURATION || 'Configuration')+": <br />" + document.getElementById("SRAconfigurationForm").innerHTML;
+                
+                //for some reason updating the innerHTML of the form looses the listener
+                //so put it back.
+                var datalist = document.getElementById("configurations");
+                datalist.addEventListener('change',configurationChange,false);
+            }
             document.getElementById("save").value         = serverVersion.translations.CREATE || 'Create';
             document.getElementById("delete").value       = serverVersion.translations.DELETE || 'Delete';
             document.getElementById("hide").value         = serverVersion.translations.HIDEALL || 'Hide All';

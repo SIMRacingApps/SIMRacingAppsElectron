@@ -202,7 +202,8 @@ function loadMain() {
                 if (this.status == 200) {
                     var listings = JSON.parse(this.responseText);
                     listings.SRAlauncher = SRAlauncher;
-                    
+
+                    listings.lang = i18n;
                     var version = listings.version.major + '.' + listings.version.minor + '_' + listings.version.build + ' [' + i18n + ']';
                     var title = main.SRAname + ' Electron ' + SRAlauncher.version + ', Server Version '+version;
                     console.log(title + ' ' + guid);
