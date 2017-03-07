@@ -352,6 +352,12 @@
                 //so put it back.
                 var datalist = document.getElementById("configurations");
                 datalist.addEventListener('change',configurationChange,false);
+                var selectedIndex = 0;
+                for (var configuration in SRAlauncher.configurations) {
+                    if (SRAlauncher.configuration == configuration)
+                        datalist.selectedIndex = selectedIndex;
+                    selectedIndex++;
+                }
             }
             document.getElementById("save").value         = serverVersion.translations.CREATE || 'Create';
             document.getElementById("delete").value       = serverVersion.translations.DELETE || 'Delete';
