@@ -90,4 +90,9 @@ Also in the [Audio] section.
 
 1. muteWhenFocusLost=0            ; set this to 0 to hear sim sounds when another program has the keyboard focus
 
+## Debugging with Electron
 
+1. Run the App from the menu.
+1. Click on the App/Widget window to debug to give it focus.
+1. Press Ctrl-Shift-i
+1. In the console type, document.getElementById("webviewelement").openDevTools();
