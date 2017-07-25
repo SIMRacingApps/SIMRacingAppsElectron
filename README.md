@@ -72,23 +72,7 @@ If you want to find out more about Atom/Electron, check out the very active repo
 
 ## iRacing can be configured to run in Windowed Mode and still be full screen.
 
-To do this, in your Documents\iRacing\app.ini file, 
-set the following variables in the [Graphics] or [Graphics DX11] sections. 
-Please keep a backup copy of this file before you change it for reference.
-This example is for 1 monitor.
-
-1. fullScreen=0                   ;0=windowed mode, 1=full screen mode (other variables are not used in full screen mode)
-1. border=0                       ;0=no borders or header, 1=header visible.
-1. reduceFramerateWhenFocusLost=0 ;Set to zero so iRacing will not slow down while clicking an App
-1. windowedMaximized=1            ;if borders are off, this is the only way to get to maximize.
-1. windowedXPos=0                 ;locate the window on the display you want it maximized on.
-1. windowedYPos=0                 ;locate the window on the display you want it maximized on.
-1. windowedWidth=1920             ;optional, will only be used if not maximized. Set to your dimension.
-1. windowedHeight=1080            ;optional, will only be used if not maximized. Set to your dimension.
-
-Also in the [Audio] section.
-
-1. muteWhenFocusLost=0            ; set this to 0 to hear sim sounds when another program has the keyboard focus
+Please go to this Wiki page, https://github.com/SIMRacingApps/SIMRacingApps/wiki/How-to-setup-iRacing-in-Windowed-Mode
 
 ## Debugging with Electron
 
