@@ -32,7 +32,7 @@ for (var i = 0; i < SIMRacingAppsConfig.vars.length; i++) {
 }
 
 SIMRacingAppsConfig.src = "http://"+SIMRacingAppsConfig.hostname  + ":" + SIMRacingAppsConfig.port
-        + "/SIMRacingApps/" + (SIMRacingAppsConfig.url ? SIMRacingAppsConfig.url : "apps/"+SIMRacingAppsConfig.app + "?")
+        + "/SIMRacingApps/" + ((SIMRacingAppsConfig.url ? SIMRacingAppsConfig.url : "apps/"+SIMRacingAppsConfig.app) + "?")
         + SIMRacingAppsConfig.args;
 
 //The following events simulate a :hover CSS property. 
