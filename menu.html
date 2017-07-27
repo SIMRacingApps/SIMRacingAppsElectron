@@ -176,9 +176,9 @@
             </tbody>
         </table>
     </tbody>
-    <!--  tfoot>
+    <tfoot>
         <tr id="upload_row"><td>
-            <form id="upload" class="upload" method="POST" enctype="multipart/form-data">
+            <form action="http://localhost/SIMRacingApps/upload"  id="upload" class="upload" method="POST" enctype="multipart/form-data">
                 To install or update an App, Widget or Patch,<br />
                 choose a File to upload, then click "Upload."<br />
                 Files will be uploaded into your user directory (<span id="userPath"></span>), <br />
@@ -187,7 +187,7 @@
                 <input type="submit" value="Upload" name="upload" id="upload" />
             </form>
         </td></tr>
-    </tfoot -->
+    </tfoot>
     </table>
     <script type="text/javascript">
         const ipc = require('electron').ipcRenderer;
@@ -332,7 +332,7 @@
                                                          + '.' + serverVersion.minor 
                                                          + "_" + serverVersion.build
                                                          + " [" + items.lang + "]";
-            //document.getElementById("userPath").innerHTML = serverVersion.userpath;
+            document.getElementById("userPath").innerHTML = serverVersion.userpath;
             document.getElementById("copyright").href     = SRAurl + serverVersion.copyrightUrl;
             document.getElementById("copyright").innerHTML= serverVersion.translations.COPYRIGHT || 'Copyright';
             document.getElementById("license").href       = SRAurl + serverVersion.licenseUrl;
