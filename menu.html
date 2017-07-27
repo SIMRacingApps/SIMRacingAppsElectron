@@ -178,13 +178,7 @@
     </tbody>
     <tfoot>
         <tr id="upload_row"><td>
-            <form action="http://localhost/SIMRacingApps/upload"  id="upload" class="upload" method="POST" enctype="multipart/form-data">
-                To install or update an App, Widget or Patch,<br />
-                choose a File to upload, then click "Upload."<br />
-                Files will be uploaded into your user directory (<span id="userPath"></span>), <br />
-                which is searched first by the server.<br />
-                <input type="file" name="file" id="file" accept=".sra"/>
-                <input type="submit" value="Upload" name="upload" id="upload" />
+            <form id="upload_form" class="upload" method="POST" enctype="multipart/form-data">
             </form>
         </td></tr>
     </tfoot>
@@ -332,7 +326,6 @@
                                                          + '.' + serverVersion.minor 
                                                          + "_" + serverVersion.build
                                                          + " [" + items.lang + "]";
-            document.getElementById("userPath").innerHTML = serverVersion.userpath;
             document.getElementById("copyright").href     = SRAurl + serverVersion.copyrightUrl;
             document.getElementById("copyright").innerHTML= serverVersion.translations.COPYRIGHT || 'Copyright';
             document.getElementById("license").href       = SRAurl + serverVersion.licenseUrl;
@@ -343,6 +336,22 @@
             document.getElementById("releasenotes").innerHTML=serverVersion.translations.RELEASENOTES || 'Release Notes';
             document.getElementById("electron_version").innerHTML = 'Electron-Apps '+(serverVersion.translations.VERSION||'Version')+': ' + items.SRAlauncher.version;
             document.getElementById("SRAurl").innerHTML   = (serverVersion.translations.SERVERURL||'Server URL')+": "+SRAurl;
+            document.getElementById("upload_form").action = SRAurl + "/SIMRacingApps/upload";
+            document.getElementById("upload_form").innerHTML = serverVersion.translations.installbefore+", ("+serverVersion.userpath+"), "+serverVersion.translations.installafter+"<br />";
+            
+            //add the buttons
+            var file = document.createElement("input");
+            file.type="file";
+            file.name="file";
+            file.id="file";
+            file.accept=".sra";
+            document.getElementById("upload_form").appendChild(file);
+            
+            var submit = document.createElement("input");
+            submit.type="submit";
+            submit.name="upload";
+            submit.id="upload";
+            document.getElementById("upload_form").appendChild(submit);
             
             //now translate the buttons
             if (!document.getElementById("SRAconfigurationForm").innerHTML.startsWith(serverVersion.translations.CONFIGURATION)) {
@@ -363,6 +372,7 @@
             document.getElementById("delete").value       = serverVersion.translations.DELETE || 'Delete';
             document.getElementById("hide").value         = serverVersion.translations.HIDEALL || 'Hide All';
             document.getElementById("show").value         = serverVersion.translations.SHOWALL || 'Show All';
+            document.getElementById("upload").value       = serverVersion.translations.UPLOAD || 'Upload';
             
             checkForUpdate();
             
