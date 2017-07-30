@@ -23,6 +23,8 @@ rem ****************************************************************************
 
 setlocal EnableDelayedExpansion
 for /f "skip=2 tokens=2,*" %%A in ('reg.exe query "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" /v "Personal"') do set "DOCUMENTS=%%B\"
+echo Documents found at %DOCUMENTS%
+
 %~d0
 cd %~dp0
 set ELECTRON_NO_ATTACH_CONSOLE=true
@@ -32,6 +34,7 @@ if not exist "%ELECTRON%\electron.exe" goto noelectron
 @rem make sure these exist. Could be starting before server or on stand alone PC, LapTop or Tablet
 @mkdir %DOCUMENTS%\SIMRacingApps 2>nul
 @mkdir %DOCUMENTS%\SIMRacingApps\storage 2>nul
+@mkdir %DOCUMENTS%\SIMRacingApps\storage\default 2>nul
 
 echo Atom/Electron Version
 type "%ELECTRON%\version"
