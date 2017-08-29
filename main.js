@@ -353,7 +353,7 @@ function loadMain() {
                 height:      SRAapp.height || 480,
                 url:         SRAapp.url,
                 frame:       SRAapp.frame, 
-                transparent: SRAapp.transparent, 
+                transparent: SRAapp.frame ? false : SRAapp.transparent, 
                 args:        SRAapp.args
             };
         
@@ -428,7 +428,7 @@ function createAppWindow(SRAapp) {
             resizable:      true,
             alwaysOnTop:    true,
             frame:          SRAapp.frame || false,
-            transparent:    SRAapp.transparent || false
+            transparent:    (SRAapp.frame ? false : SRAapp.transparent) || false
         };
     
     //sync SRAapp with options
