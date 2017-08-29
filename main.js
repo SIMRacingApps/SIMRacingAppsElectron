@@ -490,20 +490,28 @@ function createAppWindow(SRAapp) {
     
     win.on('move', function(e) {
         var bounds = e.sender.getBounds();
-        var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
-        state.x = bounds.x;
-        state.y = bounds.y;
-        //console.log('win.on.move('+e.sender.SRAname+') = ' + JSON.stringify(state));
-        localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+        if (bounds) {
+            var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
+            if (state) {
+                state.x = bounds.x;
+                state.y = bounds.y;
+                //console.log('win.on.move('+e.sender.SRAname+') = ' + JSON.stringify(state));
+                localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+            }
+        }
     });
     
     win.on('resize', function(e) {
         var bounds = e.sender.getBounds();
-        var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
-        state.width = bounds.width;
-        state.height = bounds.height;
-        //console.log('win.on.resize('+e.sender.SRAname+') = ' + JSON.stringify(state));
-        localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+        if (bounds && bounds.width && bounds.height) {
+            var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
+            if (state) {
+                state.width = bounds.width;
+                state.height = bounds.height;
+                //console.log('win.on.resize('+e.sender.SRAname+') = ' + JSON.stringify(state));
+                localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+            }
+        }
     });
     
     win.on('maximize', function(e) {

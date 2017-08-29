@@ -71,6 +71,7 @@
             max-width:  100px;
             max-height: 60px;
             text-align: center;
+            cursor: pointer;
         }
         .name {
             text-align: center;
@@ -90,6 +91,7 @@
         }
         #settings {
             width: 10%;
+            cursor: pointer;
         }
         .settings-icon {
             width: 3%;
@@ -97,6 +99,14 @@
             min-height: 35px;
             float: right;
             margin-right: 5%;
+        }
+        .settings-text {
+            color:            white;
+            font-size:        15px;
+            align-text:       right;
+            white-space:      nowrap;
+            margin-right:     5%;
+            cursor: pointer;
         }
         .options_form {
             white-space: nowrap;
@@ -157,7 +167,7 @@
                               <option value="default">default</option>
                          </select>
                     </form>
-                    <a id="settings" href="javascript:launch('settings');"><img class="settings-icon" src="resources/settings-icon.png" alt="Settings"></a>
+                    <a id="settings" href="javascript:launch('settings');"><span id="settings-text" class="settings-text">Settings</span></span><img class="settings-icon" src="resources/settings-icon.png" alt="Settings"></a>
                 </td>
                 </tr>
                 </table>
@@ -475,10 +485,21 @@
                         var td_text = document.createElement('td');
                         tr_item.appendChild(td_text);
                         
-                        var a_text  = document.createElement('a');
-                        td_text.appendChild(a_text);
-                        a_text.setAttribute('target','_blank');
-                        a_text.setAttribute('href',SRAurl + '/SIMRacingApps/' + item.doc);
+                        var a_text;
+                        //have to let the loader launch the settings.html.
+                        //it will not render under straight electron client.
+                        if (item.doc == 'settings.html') {
+                            a_text  = document.createElement('div');
+                            td_text.appendChild(a_text);
+                            a_text.setAttribute('class','settings-text');
+                            a_text.addEventListener('click',new Function('launch("settings");'));
+                        }
+                        else {
+                            a_text  = document.createElement('a');
+                            td_text.appendChild(a_text);
+                            a_text.setAttribute('href',SRAurl + '/SIMRacingApps/' + item.doc);
+                            a_text.setAttribute('target','_blank');
+                        }
                         
                         var div_text= document.createElement('div');
                         a_text.appendChild(div_text);
