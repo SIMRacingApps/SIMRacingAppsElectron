@@ -206,8 +206,9 @@
         
         var guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
         
-        function launch(name) {
-            ipc.send('loadApp',name);
+        function launch(name,url) {
+            console.log('menu.html:launch('+name+','+url+')');
+            ipc.send('loadApp',name,url);
         }
         
         function hideWindows() {
@@ -480,7 +481,7 @@
                         td_icon.appendChild(img_icon);
                         img_icon.setAttribute('class','icon');
                         img_icon.setAttribute('src',SRAurl + '/SIMRacingApps/' + item.icon);
-                        img_icon.addEventListener('click',new Function('launch("'+item.name+'");')); 
+                        img_icon.addEventListener('click',new Function('launch("'+item.name+'","'+item.url+'");')); 
                         
                         var td_text = document.createElement('td');
                         tr_item.appendChild(td_text);
@@ -497,7 +498,10 @@
                         else {
                             a_text  = document.createElement('a');
                             td_text.appendChild(a_text);
-                            a_text.setAttribute('href',SRAurl + '/SIMRacingApps/' + item.doc);
+                            if (item.doc.match(/^http:/))
+                                a_text.setAttribute('href',item.doc);
+                            else
+                                a_text.setAttribute('href',SRAurl + '/SIMRacingApps/' + item.doc);
                             a_text.setAttribute('target','_blank');
                         }
                         

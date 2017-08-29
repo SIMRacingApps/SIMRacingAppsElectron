@@ -31,9 +31,14 @@ for (var i = 0; i < SIMRacingAppsConfig.vars.length; i++) {
     }
 }
 
-SIMRacingAppsConfig.src = "http://"+SIMRacingAppsConfig.hostname  + ":" + SIMRacingAppsConfig.port
-        + "/SIMRacingApps/" + ((SIMRacingAppsConfig.url ? SIMRacingAppsConfig.url : "apps/"+SIMRacingAppsConfig.app) + "?")
-        + SIMRacingAppsConfig.args;
+if (SIMRacingAppsConfig.url && SIMRacingAppsConfig.url.match(/^http:/)) {
+        SIMRacingAppsConfig.src = SIMRacingAppsConfig.url + SIMRacingAppsConfig.args;
+}
+else {
+        SIMRacingAppsConfig.src = "http://"+SIMRacingAppsConfig.hostname  + ":" + SIMRacingAppsConfig.port
+            + "/SIMRacingApps/" + ((SIMRacingAppsConfig.url ? SIMRacingAppsConfig.url : "apps/"+SIMRacingAppsConfig.app) + "?")
+            + SIMRacingAppsConfig.args;
+}
 
 //The following events simulate a :hover CSS property. 
 //I found that :hover would not go away if the mouse moves out the top of the div.

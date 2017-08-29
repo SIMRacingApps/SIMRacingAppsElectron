@@ -373,12 +373,22 @@ function loadMain() {
         win.setAspectRatio(options.width/options.height);  //doesn't work on windows
     }
     
-    ipc.on('loadApp',function(e,name) {
+    ipc.on('loadApp',function(e,name,url) {
         var SRAapp = localStorage.getItem(name);
         if (name == 'settings') {
             SRAapp = JSON.stringify({
                 name:   'settings',
                 url:    'settings.html',
+                width:  800,
+                height: 700,
+                x:      0,
+                y:      0
+            });
+        }
+        if (url && url.match(/^http:/)) {
+            SRAapp = JSON.stringify({
+                name:   name,
+                url:    url,
                 width:  800,
                 height: 700,
                 x:      0,
