@@ -30,9 +30,9 @@ for (var i = 0; i < SIMRacingAppsConfig.vars.length; i++) {
         SIMRacingAppsConfig.args += "&" + SIMRacingAppsConfig.vars[i];
     }
 }
-
+console.log('url='+SIMRacingAppsConfig.url);
 if (SIMRacingAppsConfig.url && SIMRacingAppsConfig.url.match(/^http:/)) {
-        SIMRacingAppsConfig.src = SIMRacingAppsConfig.url + SIMRacingAppsConfig.args;
+        SIMRacingAppsConfig.src = SIMRacingAppsConfig.url;
 }
 else {
         SIMRacingAppsConfig.src = "http://"+SIMRacingAppsConfig.hostname  + ":" + SIMRacingAppsConfig.port
