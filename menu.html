@@ -199,6 +199,7 @@
         var websiteBETAVersion = {};
         var serverVersion = {};
         var SRAlauncher = {};
+        var isAppsHidden = false;
         
         function S4() {
             return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
@@ -212,11 +213,15 @@
         }
         
         function hideWindows() {
-            ipc.send('hide');
+            var hidden_request = new XMLHttpRequest();
+            hidden_request.open("GET","http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/Data/Session/setAppsHidden/Y");
+            hidden_request.send();
         }
         
         function showWindows() {
-            ipc.send('show');
+            var hidden_request = new XMLHttpRequest();
+            hidden_request.open("GET","http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/Data/Session/setAppsHidden/N");
+            hidden_request.send();
         }
         
         function saveOptions(name) {
@@ -518,6 +523,37 @@
                 }
                 listingsTable.appendChild(listingsBody);
             }
+
+            var hidden_request = new XMLHttpRequest();
+            hidden_request.onreadystatechange = function(e) {
+                if (this.readyState == this.DONE) {
+                    if (this.status == 200) {
+                        var data = JSON.parse(hidden_request.responseText);
+                        //console.log("IsAppsHidden = " + JSON.stringify(data));
+                        if (data.Value && !isAppsHidden) {
+                            ipc.send('hide');
+                            isAppsHidden = true;
+                        }
+                        else 
+                        if (!data.Value && isAppsHidden){
+                            ipc.send('show');
+                            isAppsHidden = false;
+                        }
+                    }
+                }
+                setTimeout(function() {
+                    hidden_request.open("GET","http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/Data/Session/IsAppsHidden?output=json");
+                    hidden_request.send();
+                },500);
+            };
+            
+            console.log("Starting IsAppsHidden");
+            setTimeout(function() {
+                hidden_request.open("GET","http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/Data/Session/IsAppsHidden?output=json");
+                hidden_request.send();
+            },500);
+
+            showWindows(); //always start with windows showing
         });
         
         //check for an update
