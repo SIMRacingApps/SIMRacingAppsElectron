@@ -115,6 +115,13 @@
         .options_label {
             white-space: nowrap;
         }
+        .show_options_form {
+            white-space: nowrap;
+            color: white;
+        }
+        .show_options_label {
+            white-space: nowrap;
+        }
         .itemtext {
             height: 100%;
             font-size: 120%;
@@ -179,6 +186,7 @@
             <colgroup>
                 <col style="width: 200px" />
                 <col style="width: 200px" />
+                <col style="width: 200px" />
                 <col style="width: 100%"  />
             </colgroup>
             <tbody id="listingsBody">
@@ -225,21 +233,31 @@
         }
         
         function saveOptions(name) {
+            var item = {};
             var length = document.forms.length;
             for(var i = 0; i < length; i++) {
                 var form = document.forms[i];
                 if (form.id == ("options-"+name)) {
                     //This storage key is used by the AppWindows to save position and size
                     //therefore, read it in before you save the options with it.
-                    var item = {
-                        name:          name,
-                        transparent:   form.transparent.checked,
-                        frame:         form.frame.checked,
-                        loadonstartup: form.loadonstartup.checked
-                    };
-                    ipc.send('itemChanged',item);
+                    item.name          = name;
+                    item.transparent   = form.transparent.checked;
+                    item.frame         = form.frame.checked;
+                    item.loadonstartup = form.loadonstartup.checked
+                }
+                if (form.id == ("show-options-"+name)) {
+                    //This storage key is used by the AppWindows to save position and size
+                    //therefore, read it in before you save the options with it.
+                    item.name          = name;
+                    item.notconnected  = form.notconnected.checked;
+                    item.incar         = form.incar.checked;
+                    item.ingarage      = form.ingarage.checked;
+                    item.inreplay      = form.inreplay.checked;
                 }
             }
+            
+            if (item.name)
+                ipc.send('itemChanged',item);
         };
         
         function deleteConfiguration() {
@@ -375,6 +393,7 @@
                 
                 //for some reason updating the innerHTML of the form looses the listener
                 //so put it back.
+                document.getElementById("SRAconfiguration").value = SRAlauncher.configuration;
                 var datalist = document.getElementById("configurations");
                 datalist.addEventListener('change',configurationChange,false);
                 var selectedIndex = 0;
@@ -384,11 +403,12 @@
                     selectedIndex++;
                 }
             }
-            document.getElementById("save").value         = serverVersion.translations.CREATE || 'Create';
-            document.getElementById("delete").value       = serverVersion.translations.DELETE || 'Delete';
-            document.getElementById("hide").value         = serverVersion.translations.HIDEALL || 'Hide All';
-            document.getElementById("show").value         = serverVersion.translations.SHOWALL || 'Show All';
-            document.getElementById("upload").value       = serverVersion.translations.UPLOAD || 'Upload';
+            document.getElementById("save").value              = serverVersion.translations.CREATE   || 'Create';
+            document.getElementById("delete").value            = serverVersion.translations.DELETE   || 'Delete';
+            document.getElementById("hide").value              = serverVersion.translations.HIDEALL  || 'Hide All';
+            document.getElementById("show").value              = serverVersion.translations.SHOWALL  || 'Show All';
+            document.getElementById("upload").value            = serverVersion.translations.UPLOAD   || 'Upload';
+            document.getElementById("settings-text").innerHTML = serverVersion.translations.SETTINGS || 'Settings';
             
             checkForUpdate();
             
@@ -407,7 +427,7 @@
                     
                     var td_header = document.createElement('td');
                     td_header.setAttribute('class','header');
-                    td_header.setAttribute('colspan','3');
+                    td_header.setAttribute('colspan','4');
                     td_header.innerHTML = serverVersion.translations[header] || header;
                     tr_header.appendChild(td_header);
                     
@@ -478,6 +498,80 @@
                         label_loadonstartup.setAttribute('class','options_label');
                         label_loadonstartup.innerHTML = serverVersion.translations.LOADONSTARTUP || "LoadOnStartup";
                         
+						var td_show = document.createElement('td');
+						tr_item.appendChild(td_show);
+						var show_form_options = document.createElement('form');
+						td_show.appendChild(show_form_options);
+						show_form_options.setAttribute('class','show_options_form');
+						show_form_options.setAttribute('data-name',item.name);
+						show_form_options.setAttribute('id','show-options-' + item.name);
+						
+						var input_notconnected = document.createElement('input');
+						show_form_options.appendChild(input_notconnected);
+						input_notconnected.setAttribute('type','checkbox');
+						input_notconnected.setAttribute('name','notconnected');
+						input_notconnected.setAttribute('value','notconnected');
+						input_notconnected.setAttribute('id',item.name + '-notconnected');
+						input_notconnected.checked = item.notconnected;
+						input_notconnected.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+						
+						var label_notconnected = document.createElement('label');
+						show_form_options.appendChild(label_notconnected);
+						label_notconnected.setAttribute('for',item.name + '-notconnected');
+						label_notconnected.setAttribute('class','show_options_label');
+						label_notconnected.innerHTML = serverVersion.translations.NOTCONNECTED || "NotConnected";
+						
+						show_form_options.appendChild(document.createElement('br'));
+						
+						var input_incar = document.createElement('input');
+						show_form_options.appendChild(input_incar);
+						input_incar.setAttribute('type','checkbox');
+						input_incar.setAttribute('name','incar');
+						input_incar.setAttribute('value','incar');
+						input_incar.setAttribute('id',item.name + '-incar');
+						input_incar.checked = item.incar;
+						input_incar.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+						
+						var label_incar = document.createElement('label');
+						show_form_options.appendChild(label_incar);
+						label_incar.setAttribute('for',item.name + '-incar');
+						label_incar.setAttribute('class','show_options_label');
+						label_incar.innerHTML = serverVersion.translations.INCAR || "incar";
+						
+						show_form_options.appendChild(document.createElement('br'));
+						
+						var input_ingarage = document.createElement('input');
+						show_form_options.appendChild(input_ingarage);
+						input_ingarage.setAttribute('type','checkbox');
+						input_ingarage.setAttribute('name','ingarage');
+						input_ingarage.setAttribute('value','ingarage');
+						input_ingarage.setAttribute('id',item.name + '-ingarage');
+						input_ingarage.checked = item.ingarage;
+						input_ingarage.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+						
+						var label_ingarage = document.createElement('label');
+						show_form_options.appendChild(label_ingarage);
+						label_ingarage.setAttribute('for',item.name + '-ingarage');
+						label_ingarage.setAttribute('class','show_options_label');
+						label_ingarage.innerHTML = serverVersion.translations.INGARAGE || "ingarage";
+						
+						show_form_options.appendChild(document.createElement('br'));
+						
+						var input_inreplay = document.createElement('input');
+						show_form_options.appendChild(input_inreplay);
+						input_inreplay.setAttribute('type','checkbox');
+						input_inreplay.setAttribute('name','inreplay');
+						input_inreplay.setAttribute('value','inreplay');
+						input_inreplay.setAttribute('id',item.name + '-inreplay');
+						input_inreplay.checked = item.inreplay;
+						input_inreplay.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+						
+						var label_inreplay = document.createElement('label');
+						show_form_options.appendChild(label_inreplay);
+						label_inreplay.setAttribute('for',item.name + '-inreplay');
+						label_inreplay.setAttribute('class','show_options_label');
+						label_inreplay.innerHTML = serverVersion.translations.INREPLAY || "inreplay";
+
                         var td_icon = document.createElement('td');
                         tr_item.appendChild(td_icon);
                         td_icon.setAttribute('class','icon');
@@ -485,7 +579,10 @@
                         var img_icon = document.createElement('img');
                         td_icon.appendChild(img_icon);
                         img_icon.setAttribute('class','icon');
-                        img_icon.setAttribute('src',SRAurl + '/SIMRacingApps/' + item.icon);
+                        if (item.icon.match(/^http/))
+                            img_icon.setAttribute('src',item.icon);
+                        else
+                            img_icon.setAttribute('src',SRAurl + '/SIMRacingApps/' + item.icon);
                         img_icon.addEventListener('click',new Function('launch("'+item.name+'","'+item.url+'");')); 
                         
                         var td_text = document.createElement('td');
@@ -503,7 +600,7 @@
                         else {
                             a_text  = document.createElement('a');
                             td_text.appendChild(a_text);
-                            if (item.doc.match(/^http:/))
+                            if (item.doc.match(/^http/))
                                 a_text.setAttribute('href',item.doc);
                             else
                                 a_text.setAttribute('href',SRAurl + '/SIMRacingApps/' + item.doc);
@@ -513,7 +610,12 @@
                         var div_text= document.createElement('div');
                         a_text.appendChild(div_text);
                         div_text.setAttribute('class','itemtext');
-                        div_text.innerHTML = item.name + '<br />';
+                        if (item.name == 'Settings') {
+                            div_text.innerHTML = (serverVersion.translations.SETTINGS || item.name) + '<br />';
+                        }
+                        else {
+                            div_text.innerHTML = item.name + '<br />';
+                        }
                         
                         var div_desc= document.createElement('div');
                         a_text.appendChild(div_desc);

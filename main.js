@@ -40,15 +40,20 @@ var delay = 0;
 var appsToLoad = {};
 var frame = false;
 var transparent = false;
+var clicktrough = true;
 var backgroundColor = "";
-var seenPeriod = false;   //we only want the args that come after the period on the command line.
+var seenElectronArgs = false;  //we only want the args that come after the electron args
 var menu=true;
+var currentState = 'notconnected';
+
+console.log('argv = ',process.argv);
+
 for (var i=1;i < process.argv.length;i++) {
     
     var arg = process.argv[i].toLowerCase();
-    if (!seenPeriod) {
-        if (arg == '.')
-            seenPeriod = true;
+    if (!seenElectronArgs) {
+        if (arg.substr(0,1) != '-')
+            seenElectronArgs = true;
     }
     else
     if (arg == "-hostname") {
@@ -81,6 +86,10 @@ for (var i=1;i < process.argv.length;i++) {
         backgroundColor = 'transparent';
     }
     else
+    if (arg == "-noclickthrough") {
+        clickthrough = false;
+    }
+    else
     if (arg == "-backgroundcolor") {
         backgroundColor = process.argv[++i];
     }
@@ -105,6 +114,31 @@ for (var i=1;i < process.argv.length;i++) {
 defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
 
 var localStorage   = (SRAlauncher.configuration == 'default' ? defaultStorage : new LocalStorage(storagePath + SRAlauncher.configuration));
+
+function updateStatus(win) {
+    if (win) {
+        console.log('updateStatus('+win.SRAapp.name+') currentState='+currentState
+                   +', notconnected='+win.SRAapp.notconnected
+                   +', incar='+win.SRAapp.incar
+                   +', ingarage='+win.SRAapp.ingarage
+                   +', inreplay='+win.SRAapp.inreplay
+                   );
+
+        if (win.SRAapp.notconnected && currentState == 'notconnected')
+            win.show();
+        else
+        if (win.SRAapp.ingarage && currentState == 'ingarage')
+            win.show();
+        else
+        if (win.SRAapp.inreplay && currentState == 'inreplay')
+            win.show();
+        else
+        if (win.SRAapp.incar && currentState == 'incar')
+            win.show();
+        else
+            win.hide();
+    }
+};
 
 function loadMain() {
     if (main != null)
@@ -166,12 +200,22 @@ function loadMain() {
 
     ipc.on('show',function(e) {
         for (var i=0; i < windows.length; i++) {
-            if (windows[i]) {
-                windows[i].show();
-            }
+            updateStatus(windows[i]);
         }
     });
 
+/*    
+    ipc.on('state',function(e,state) {
+        if (currentState != state) {
+            console.log('state changed from ('+currentState+') to ('+state+')')
+            currentState = state;
+            for (var i=0; i < windows.length; i++) {
+                updateStatus(windows[i]);
+            }
+        }
+    });
+*/
+    
     function S4() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
     };
@@ -253,6 +297,11 @@ function loadMain() {
                                     item.transparent   = false;
                                     item.frame         = false;
                                     item.loadonstartup = false;
+                                    item.notconnected  = true;
+                                    item.incar         = true;
+                                    item.ingarage      = true;
+                                    item.inreplay      = true;
+                                    
                                     if (localStorage.getItem(item.name)) {
                                         var state = JSON.parse(localStorage.getItem(item.name));
                                         if (state) {
@@ -263,6 +312,10 @@ function loadMain() {
                                             item.transparent   = typeof(state.transparent)   === 'undefined' ? item.transparent   : state.transparent;
                                             item.frame         = typeof(state.frame)         === 'undefined' ? item.frame         : state.frame;
                                             item.loadonstartup = typeof(state.loadonstartup) === 'undefined' ? item.loadonstartup : state.loadonstartup;
+                                            item.notconnected  = typeof(state.notconnected)  === 'undefined' ? item.notconnected  : state.notconnected;
+                                            item.incar         = typeof(state.incar)         === 'undefined' ? item.incar         : state.incar;
+                                            item.ingarage      = typeof(state.ingarage)      === 'undefined' ? item.ingarage      : state.ingarage;
+                                            item.inreplay      = typeof(state.inreplay)      === 'undefined' ? item.inreplay      : state.inreplay;
                                             if (item.width < 0)
                                                 item.width = 800;
                                             if (item.height < 0)
@@ -283,6 +336,10 @@ function loadMain() {
                                             item.transparent   = typeof(state.transparent)   === 'undefined' ? item.transparent   : state.transparent;
                                             item.frame         = typeof(state.frame)         === 'undefined' ? item.frame         : state.frame;
                                             item.loadonstartup = typeof(state.loadonstartup) === 'undefined' ? item.loadonstartup : state.loadonstartup;
+                                            item.notconnected  = typeof(state.notconnected)  === 'undefined' ? item.notconnected  : state.notconnected;
+                                            item.incar         = typeof(state.incar)         === 'undefined' ? item.incar         : state.incar;
+                                            item.ingarage      = typeof(state.ingarage)      === 'undefined' ? item.ingarage      : state.ingarage;
+                                            item.inreplay      = typeof(state.inreplay)      === 'undefined' ? item.inreplay      : state.inreplay;
                                             if (item.width < 0)
                                                 item.width = 800;
                                             if (item.height < 0)
@@ -310,6 +367,7 @@ function loadMain() {
     main.webContents.on('did-finish-load',function(e) {
         //main.webContents.send('SIMRacingAppsLauncher',SRAlauncher); //send() stringifies on its own.
         loadConfiguration(SRAlauncher.configuration);
+        
     });
     
     ipc.on('loadConfiguration',function(e,configuration) {
@@ -339,8 +397,30 @@ function loadMain() {
                 state.frame = item.frame;
             if (typeof item.loadonstartup !== 'undefined')
                 state.loadonstartup = item.loadonstartup;
+            
+            if (typeof item.notconnected !== 'undefined')
+                state.notconnected = item.notconnected;
+            if (typeof item.incar !== 'undefined')
+                state.incar = item.incar;
+            if (typeof item.ingarage !== 'undefined')
+                state.ingarage = item.ingarage;
+            if (typeof item.inreplay !== 'undefined')
+                state.inreplay = item.inreplay;
+            
             console.log('itemChanged().state = ' + JSON.stringify(state));
             localStorage.setItem(item.name,JSON.stringify(state));
+            for (var i=0; i < windows.length; i++) {
+                if (windows[i] && windows[i].SRAapp.name == item.name) {
+                    windows[i].SRAapp.transparent   = state.transparent;
+                    windows[i].SRAapp.frame         = state.frame;
+                    windows[i].SRAapp.loadonstartup = state.loadonstartup;
+                    windows[i].SRAapp.notconnected  = state.notconnected;
+                    windows[i].SRAapp.incar         = state.incar;
+                    windows[i].SRAapp.ingarage      = state.ingarage;
+                    windows[i].SRAapp.inreplay      = state.inreplay;
+                    updateStatus(windows[i]);
+                }
+            }
         }
     });
     
@@ -353,7 +433,11 @@ function loadMain() {
                 height:      SRAapp.height || 480,
                 url:         SRAapp.url,
                 frame:       SRAapp.frame, 
-                transparent: SRAapp.frame ? false : SRAapp.transparent, 
+                transparent: SRAapp.frame ? false : SRAapp.transparent,
+                notconnected: SRAapp.notconnected,
+                incar:       SRAapp.incar,
+                ingarage:    SRAapp.ingarage,
+                inreplay:    SRAapp.inreplay,
                 args:        SRAapp.args
             };
         
@@ -365,8 +449,11 @@ function loadMain() {
                 options.args += (options.args.length > 0 ? '&' : '') + "backgroundColor=" + encodeURIComponent(SRAapp.backgroundColor);
         }
         else
-        if (options.transparent)
+        if (options.transparent && !clicktrough)
             options.args += (options.args.length > 0 ? '&' : '') + "backgroundColor=" + encodeURIComponent("rgba(0,0,0,.01)");
+        else
+        if (options.transparent && clicktrough)
+            options.args += (options.args.length > 0 ? '&' : '') + "backgroundColor=" + encodeURIComponent("rgba(0,0,0,0)");
         
         var win = createAppWindow(options);
         win.SRA_originalOptions = options;
@@ -398,6 +485,116 @@ function loadMain() {
         console.log("ipc.on.loadApp("+name+") = " + SRAapp);
         loadApp(JSON.parse(SRAapp));
     });
+
+
+    var last_message = "";
+    var last_status = "";
+    var last_replay = false;
+    
+    function updateState(state) {
+        if (currentState != state) {
+            console.log('state changed from ('+currentState+') to ('+state+')')
+            currentState = state;
+            for (var i=0; i < windows.length; i++) {
+                updateStatus(windows[i]);
+            }
+        }
+    }
+    
+    function setState() {
+        var index = last_message.indexOf(';DISCONNECTED;');
+//        console.log('index='+index+', message='+last_message+', status='+last_status+', replay='+last_replay);
+        if (index > -1) {
+            updateState('notconnected');
+        }
+        else
+        if (last_status == 'INGARAGE') {
+            updateState('ingarage');
+        }
+        else
+        if (last_replay) {
+            updateState('inreplay');
+        }
+        else {
+            updateState('incar');
+        }
+        setTimeout( setState,200 );
+    }
+    
+    setTimeout( setState,5000 );  //give the apps time to load
+    
+    var messages_request = new XMLHttpRequest();
+    var messages_URL = "http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/Data/Session/Messages?output=json";
+    
+    messages_request.onreadystatechange = function(e) {
+        if (this.readyState == this.DONE) {
+            if (this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                last_message = response.Value;
+            }
+            if (this.status != 0) {
+                setTimeout( function() {
+                    messages_request.open("GET",messages_URL);
+                    messages_request.send();
+                },1000);
+            }
+        }
+    };
+    console.log("Starting Messages at "+messages_URL);
+    setTimeout( function() {
+        messages_request.open("GET",messages_URL);
+        messages_request.send();
+    },200);
+    
+    var status_request = new XMLHttpRequest();
+    var status_URL = "http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/Data/Car/ME/Status?output=json";
+    
+    status_request.onreadystatechange = function(e) {
+        if (this.readyState == this.DONE) {
+            if (this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                last_status = response.Value;
+            }
+            if (this.status != 0) {
+                setTimeout( function() {
+                    status_request.open("GET",status_URL);
+                    status_request.send();
+                },1000);
+            }
+        }
+    };
+    console.log("Starting Status at "+status_URL);
+    setTimeout( function() {
+        status_request.open("GET",status_URL);
+        status_request.send();
+    },200);
+    
+    var replay_request = new XMLHttpRequest();
+    var replay_URL = "http://"+SRAlauncher.hostname+":"+SRAlauncher.port+"/SIMRacingApps/Data/Session/IsReplay?output=json";
+    
+    replay_request.onreadystatechange = function(e) {
+        if (this.readyState == this.DONE) {
+            if (this.status == 200) {
+                var response = JSON.parse(this.responseText);
+
+                last_replay = response.Value;
+            }
+            if (this.status != 0) {
+                setTimeout( function() {
+                    replay_request.open("GET",replay_URL);
+                    replay_request.send();
+                },1000);
+            }
+        }
+    };
+    console.log("Starting Replay at "+replay_URL);
+    setTimeout( function() {
+        replay_request.open("GET",replay_URL);
+        replay_request.send();
+    },200);
+    
 }
 
 // This method will be called when Electron has finished
@@ -410,7 +607,7 @@ function createAppWindow(SRAapp) {
     
     //If the window is already loaded, close it first
     for (var i=0; i < windows.length; i++) {
-        if (windows[i] && windows[i].SRAname == SRAapp.name) {
+        if (windows[i] && windows[i].SRAapp.name == SRAapp.name) {
             windows[i].close();
         }
     }
@@ -441,12 +638,21 @@ function createAppWindow(SRAapp) {
     
     //I'm going to create the window 1 pixel too big, as sometimes that causing the transparency to kick in
     //when it gets resized.
-    if (options.transparent) {
+    if (options.transparent && delay > 0) {
         options.height = SRAapp.height + 2;
     }
     
     console.log("creating BrowserWindow() = " + JSON.stringify(options));
     var win = new BrowserWindow(options);
+    
+    //for some reason the options are ignored by the constructor
+    //force the window to the requested bounds.
+    win.setBounds({
+        x:      options.x,
+        y:      options.y,
+        width:  options.width,
+        height: options.height
+    });
     
     // and load the index.html of the app.
     var url = 'file://' + app.getAppPath() + '/appcontainer.html'
@@ -464,6 +670,7 @@ function createAppWindow(SRAapp) {
     console.log('Loading: '+SRAapp.name+' with ' + JSON.stringify(SRAapp));
     console.log(url);
     win.loadURL(url);
+    
     
     //wait to restore it, because for some reason the transparency will not
     //function until the webview is loaded.
@@ -495,18 +702,20 @@ function createAppWindow(SRAapp) {
             }
         },delay);
     
-    win.SRAname  = SRAapp.name;
+    win.SRAapp   = SRAapp;
+//    win.SRAname  = SRAapp.name;
     win.SRAindex = windows.length;
+    updateStatus(win);
     
     win.on('move', function(e) {
         var bounds = e.sender.getBounds();
         if (bounds) {
-            var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
+            var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
             if (state) {
                 state.x = bounds.x;
                 state.y = bounds.y;
-                //console.log('win.on.move('+e.sender.SRAname+') = ' + JSON.stringify(state));
-                localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+                //console.log('win.on.move('+e.sender.SRAapp.name+') = ' + JSON.stringify(state));
+                localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
             }
         }
     });
@@ -514,45 +723,45 @@ function createAppWindow(SRAapp) {
     win.on('resize', function(e) {
         var bounds = e.sender.getBounds();
         if (bounds && bounds.width && bounds.height) {
-            var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
+            var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
             if (state) {
                 state.width = bounds.width;
                 state.height = bounds.height;
                 //console.log('win.on.resize('+e.sender.SRAname+') = ' + JSON.stringify(state));
-                localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+                localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
             }
         }
     });
     
     win.on('maximize', function(e) {
         var bounds = e.sender.getBounds();
-        var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
+        var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
         state.x = bounds.x;
         state.y = bounds.y;
         state.width = bounds.width;
         state.height = bounds.height;
         //console.log('win.on.maximize('+e.sender.SRAname+') = ' + JSON.stringify(state));
-        localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+        localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
     });
     
     win.on('restore', function(e) {
         var bounds = e.sender.getBounds();
-        var state  = JSON.parse(localStorage.getItem(e.sender.SRAname));
+        var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
         state.x = bounds.x;
         state.y = bounds.y;
         state.width = bounds.width;
         state.height = bounds.height;
         //console.log('win.on.restore('+e.sender.SRAname+') = ' + JSON.stringify(state));
-        localStorage.setItem(e.sender.SRAname,JSON.stringify(state));
+        localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
     });
     
     // Emitted when the window is closed.
     win.on('closed', function(e) {
-        console.log('Closing: '+e.sender.SRAname);
+        console.log('Closing: '+e.sender.SRAapp.name);
         windows[e.sender.SRAindex] = null;
-        if (main) main.webContents.send('loadingApps','Closing: '+e.sender.SRAname);
+        if (main) main.webContents.send('loadingApps','Closing: '+e.sender.SRAapp.name);
     });
-    
+
     windows.push(win); //keep a reference so it won't garbarge collect it
     return win;
 };

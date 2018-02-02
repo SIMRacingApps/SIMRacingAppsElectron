@@ -44,8 +44,8 @@ Here are the steps to do so.
       1. Defaults are:
          1.   ``host            = localhost    ;Where SRA Server is running``
          1.   ``port            = 80           ;What port SRA Server is running on``
-         1.   ``lang            = language     ;languageCode or languageCode_COUNTRY_CODE``
-         1.   ``configuration   = default      ;The name of configuration to save App locations and sizes to.``
+         1.   ``lang            = language     ;languageCode or languageCode_COUNTRY_CODE from your system settings``
+         1.   ``configuration   = "default"    ;The name of configuration to save App locations and sizes to.``
          1.   ``delay           = 0            ;The amount of time to allow the widget to load before applying transparency. Some systems need a 5000 ms delay to get transparency to work.``
 1. Now click on the shortcut to launch Electron. It should connect to the server and display the menu, assuming the server is running on the PC.
    1. Tip: Resize and Move an App/Widget with transparency turned off. Then, if you want it, turn the transparency back on and reload the App/Widget.

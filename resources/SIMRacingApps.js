@@ -31,7 +31,7 @@ for (var i = 0; i < SIMRacingAppsConfig.vars.length; i++) {
     }
 }
 console.log('url='+SIMRacingAppsConfig.url);
-if (SIMRacingAppsConfig.url && SIMRacingAppsConfig.url.match(/^http:/)) {
+if (SIMRacingAppsConfig.url && SIMRacingAppsConfig.url.match(/^http/)) {
         SIMRacingAppsConfig.src = SIMRacingAppsConfig.url;
 }
 else {
@@ -39,6 +39,8 @@ else {
             + "/SIMRacingApps/" + ((SIMRacingAppsConfig.url ? SIMRacingAppsConfig.url : "apps/"+SIMRacingAppsConfig.app) + "?")
             + SIMRacingAppsConfig.args;
 }
+//alert(SIMRacingAppsConfig.src);
+console.log('src='+SIMRacingAppsConfig.src);
 
 //The following events simulate a :hover CSS property. 
 //I found that :hover would not go away if the mouse moves out the top of the div.
@@ -77,7 +79,7 @@ var SRAreturnFalse = function() {
 //var src = 'http://192.168.1.61/SIMRacingApps/WidgetLoader/?widget=TrackMap/TrackMap&play=charlotte.bin&interval=100&zoom=1';
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log(SIMRacingAppsConfig.src);
+    console.log('[webview]:'+SIMRacingAppsConfig.src);
     document.title = SIMRacingAppsConfig.app;
     document.getElementById("bar").onmouseover = SRAonMouseOver;
     document.getElementById("bar").onmouseout  = SRAonMouseOut;
@@ -102,8 +104,10 @@ document.addEventListener('DOMContentLoaded', function() {
     w.addEventListener("console-message",function(e) {
         console.log("webview(console-message)="+e.message);
     });
+    w.addEventListener('dom-ready', () => {
+        //w.openDevTools()
+    });
     w.setAttribute('src',SIMRacingAppsConfig.src);
-    
 });
 
 
