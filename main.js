@@ -614,10 +614,10 @@ function createAppWindow(SRAapp) {
     
     // Create the browser window, then move it to get transparency to take affect
     var options = {
-            width:          SRAapp.width  || 800, 
-            height:         SRAapp.height || 480,
-            x:              SRAapp.x ? SRAapp.x : 0,
-            y:              SRAapp.y ? SRAapp.y : 0,
+            width:          (SRAapp.width * 1)  || 800, 
+            height:         (SRAapp.height * 1) || 480,
+            x:              SRAapp.x ? (SRAapp.x * 1) : 0,
+            y:              SRAapp.y ? (SRAapp.y * 1): 0,
             title:          SRAapp.name,
             icon:           'resources/SRA-Logo-16x16.png',
             autoHideMenuBar:SRAapp.frame ? true : false,
@@ -644,16 +644,22 @@ function createAppWindow(SRAapp) {
     
     console.log("creating BrowserWindow() = " + JSON.stringify(options));
     var win = new BrowserWindow(options);
-    
-    //for some reason the options are ignored by the constructor
-    //force the window to the requested bounds.
-    win.setBounds({
-        x:      options.x,
-        y:      options.y,
-        width:  options.width,
-        height: options.height
-    });
-    
+/*    
+    var arg = {
+            x:      options.x,
+            y:      options.y,
+            width:  options.width,
+            height: options.height
+        };
+    try {
+        //for some reason the options are ignored by the constructor
+        //force the window to the requested bounds.
+        win.setBounds(arg);
+    }
+    catch (e) {
+        console.log("Exception: win.setBounds("+ JSON.stringify(arg) + ") = " + + JSON.stringify(e));
+    }
+*/    
     // and load the index.html of the app.
     var url = 'file://' + app.getAppPath() + '/appcontainer.html'
     + '?hostname=' + SRAlauncher.hostname
