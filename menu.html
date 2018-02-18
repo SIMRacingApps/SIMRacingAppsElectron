@@ -232,12 +232,21 @@
             hidden_request.send();
         }
         
-        function saveOptions(name) {
+        function saveOptions(name,option) {
             var item = {};
             var length = document.forms.length;
             for(var i = 0; i < length; i++) {
                 var form = document.forms[i];
                 if (form.id == ("options-"+name)) {
+                    
+                    //transparent and frame cannot be on at the same time
+                    //see which one changed and force the other off
+                    if (option == 'transparent' && form.transparent.checked)
+                        form.frame.checked = false;
+                    
+                    if (option == 'frame' && form.frame.checked)
+                        form.transparent.checked = false;
+                    
                     //This storage key is used by the AppWindows to save position and size
                     //therefore, read it in before you save the options with it.
                     item.name          = name;
@@ -456,7 +465,7 @@
                         input_transparent.setAttribute('value','transparent');
                         input_transparent.setAttribute('id',item.name + '-transparent');
                         input_transparent.checked = item.transparent;
-                        input_transparent.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+                        input_transparent.addEventListener('click',new Function('saveOptions("'+item.name+'","transparent");'));
                         
                         var label_transparent = document.createElement('label');
                         form_options.appendChild(label_transparent);
@@ -473,7 +482,7 @@
                         input_frame.setAttribute('value','frame');
                         input_frame.setAttribute('id',item.name + '-frame');
                         input_frame.checked = item.frame;
-                        input_frame.addEventListener('click',new Function('saveOptions("'+item.name+'");'));
+                        input_frame.addEventListener('click',new Function('saveOptions("'+item.name+'","frame");'));
                         
                         var label_frame = document.createElement('label');
                         form_options.appendChild(label_frame);

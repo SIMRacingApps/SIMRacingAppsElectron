@@ -410,16 +410,29 @@ function loadMain() {
             console.log('itemChanged().state = ' + JSON.stringify(state));
             localStorage.setItem(item.name,JSON.stringify(state));
             for (var i=0; i < windows.length; i++) {
+                var reload = false;
                 if (windows[i] && windows[i].SRAapp.name == item.name) {
-                    windows[i].SRAapp.transparent   = state.transparent;
-                    windows[i].SRAapp.frame         = state.frame;
+                    
+                    if (windows[i].SRAapp.transparent != state.transparent) {
+                        windows[i].SRAapp.transparent = state.transparent;
+                        reload = true;
+                    }
+                    if (windows[i].SRAapp.frame != state.frame) {
+                        windows[i].SRAapp.frame = state.frame;
+                        reload = true;
+                    }
                     windows[i].SRAapp.loadonstartup = state.loadonstartup;
                     windows[i].SRAapp.notconnected  = state.notconnected;
                     windows[i].SRAapp.incar         = state.incar;
                     windows[i].SRAapp.ingarage      = state.ingarage;
                     windows[i].SRAapp.inreplay      = state.inreplay;
                     updateStatus(windows[i]);
+                    
+                    if (reload)
+                        loadApp(windows[i].SRAapp);
                 }
+                
+                
             }
         }
     });
