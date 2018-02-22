@@ -112,11 +112,12 @@ for (var i=1;i < process.argv.length;i++) {
 
 //Save the options for the client windows to use and to remember for next time
 defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
+console.log('save args = ' + JSON.stringify(SRAlauncher));
 
 var localStorage   = (SRAlauncher.configuration == 'default' ? defaultStorage : new LocalStorage(storagePath + SRAlauncher.configuration));
 
 function updateStatus(win) {
-    if (win) {
+    if (win && win.SRAapp.name != 'Settings') {
         console.log('updateStatus('+win.SRAapp.name+') currentState='+currentState
                    +', notconnected='+win.SRAapp.notconnected
                    +', incar='+win.SRAapp.incar
@@ -170,6 +171,7 @@ function loadMain() {
         SRAlauncher.x = bounds.x;
         SRAlauncher.y = bounds.y;
         defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
+        //console.log('move = ' + JSON.stringify(SRAlauncher));
     });
     
     main.on('resize', function(e) {
@@ -177,6 +179,7 @@ function loadMain() {
         SRAlauncher.width = bounds.width;
         SRAlauncher.height = bounds.height;
         defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
+        //console.log('resize = ' + JSON.stringify(SRAlauncher));
     });
 
     //When the main window is minimize, restored or closed, do all windows the same
@@ -226,6 +229,7 @@ function loadMain() {
         SRAlauncher.configurations[configuration] = true;
         
         defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
+        console.log('loadConfiguration = ' + JSON.stringify(SRAlauncher));
         main.setTitle('SIMRacingApps - ' + SRAlauncher.configuration);
         localStorage   = (SRAlauncher.configuration == 'default' ? defaultStorage : new LocalStorage(storagePath + SRAlauncher.configuration));
         
@@ -295,7 +299,7 @@ function loadMain() {
                                 //add these to the listings. We store these locally
                                 if (menu) {
                                     item.transparent   = false;
-                                    item.frame         = false;
+                                    item.frame         = header.toUpperCase() === 'DOCUMENTATION' ? true : false;
                                     item.loadonstartup = false;
                                     item.notconnected  = true;
                                     item.incar         = true;
@@ -310,7 +314,7 @@ function loadMain() {
                                             item.width         = (state.width  || item.width) * 1;
                                             item.height        = (state.height || item.height) * 1;
                                             item.transparent   = typeof(state.transparent)   === 'undefined' ? item.transparent   : state.transparent;
-                                            item.frame         = typeof(state.frame)         === 'undefined' ? item.frame         : state.frame;
+                                            item.frame         = header.toUpperCase() === 'DOCUMENTATION' ? true : (typeof(state.frame)         === 'undefined' ? item.frame         : state.frame);
                                             item.loadonstartup = typeof(state.loadonstartup) === 'undefined' ? item.loadonstartup : state.loadonstartup;
                                             item.notconnected  = typeof(state.notconnected)  === 'undefined' ? item.notconnected  : state.notconnected;
                                             item.incar         = typeof(state.incar)         === 'undefined' ? item.incar         : state.incar;
@@ -323,6 +327,7 @@ function loadMain() {
                                         }
                                     }
                                     localStorage.setItem(item.name,JSON.stringify(item));
+                                    console.log('save menu item = ' + JSON.stringify(item));
                                 }
 
                                 if (item.loadonstartup || (!menu && item.name.toLowerCase() in appsToLoad)) {
@@ -334,7 +339,7 @@ function loadMain() {
                                             item.width         = (state.width  || item.width) * 1;
                                             item.height        = (state.height || item.height) * 1;
                                             item.transparent   = typeof(state.transparent)   === 'undefined' ? item.transparent   : state.transparent;
-                                            item.frame         = typeof(state.frame)         === 'undefined' ? item.frame         : state.frame;
+                                            item.frame         = header.toUpperCase() === 'DOCUMENTATION' ? true : (typeof(state.frame)         === 'undefined' ? item.frame         : state.frame);
                                             item.loadonstartup = typeof(state.loadonstartup) === 'undefined' ? item.loadonstartup : state.loadonstartup;
                                             item.notconnected  = typeof(state.notconnected)  === 'undefined' ? item.notconnected  : state.notconnected;
                                             item.incar         = typeof(state.incar)         === 'undefined' ? item.incar         : state.incar;
@@ -347,6 +352,7 @@ function loadMain() {
                                         }
                                     }
                                     localStorage.setItem(item.name,JSON.stringify(item));
+                                    console.log('loadStartup = ' + JSON.stringify(item));
                                     loadApp(item);
                                 }
                             }
@@ -407,8 +413,9 @@ function loadMain() {
             if (typeof item.inreplay !== 'undefined')
                 state.inreplay = item.inreplay;
             
-            console.log('itemChanged().state = ' + JSON.stringify(state));
             localStorage.setItem(item.name,JSON.stringify(state));
+            console.log('itemChanged().state = ' + JSON.stringify(state));
+            
             for (var i=0; i < windows.length; i++) {
                 var reload = false;
                 if (windows[i] && windows[i].SRAapp.name == item.name) {
@@ -475,9 +482,9 @@ function loadMain() {
     
     ipc.on('loadApp',function(e,name,url) {
         var SRAapp = localStorage.getItem(name);
-        if (name == 'settings') {
+        if (name == 'settings' || name == 'Settings') {
             SRAapp = JSON.stringify({
-                name:   'settings',
+                name:   'Settings',
                 url:    'settings.html',
                 width:  800,
                 height: 700,
@@ -637,7 +644,7 @@ function createAppWindow(SRAapp) {
             useContentSize: SRAapp.frame ? false : true,
             resizable:      true,
             alwaysOnTop:    true,
-            frame:          SRAapp.frame || false,
+            frame:          typeof SRAapp.frame === 'undefined' ? true : SRAapp.frame,
             transparent:    (SRAapp.frame ? false : SRAapp.transparent) || false
         };
     
@@ -674,7 +681,7 @@ function createAppWindow(SRAapp) {
     }
 */    
     // and load the index.html of the app.
-    var url = 'file://' + app.getAppPath() + '/appcontainer.html'
+    var url = 'file://' + app.getAppPath().replace(/\\/g,'/') + '/appcontainer.html'
     + '?hostname=' + SRAlauncher.hostname
     + '&port='     + SRAlauncher.port
     + (SRAlauncher.lang == null ? '' : '&lang=' + SRAlauncher.lang)
@@ -724,6 +731,8 @@ function createAppWindow(SRAapp) {
     win.SRAapp   = SRAapp;
 //    win.SRAname  = SRAapp.name;
     win.SRAindex = windows.length;
+    windows.push(win); //keep a reference so it won't garbarge collect it
+    
     updateStatus(win);
     
     win.on('move', function(e) {
@@ -735,6 +744,9 @@ function createAppWindow(SRAapp) {
                 state.y = bounds.y;
                 //console.log('win.on.move('+e.sender.SRAapp.name+') = ' + JSON.stringify(state));
                 localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
+                e.sender.SRAapp.x = state.x;
+                e.sender.SRAapp.y = state.y;
+                //console.log('win.move = ' + JSON.stringify(state));
             }
         }
     });
@@ -748,6 +760,9 @@ function createAppWindow(SRAapp) {
                 state.height = bounds.height;
                 //console.log('win.on.resize('+e.sender.SRAname+') = ' + JSON.stringify(state));
                 localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
+                e.sender.SRAapp.width = state.width;
+                e.sender.SRAapp.height = state.height;
+                //console.log('win.resize = ' + JSON.stringify(state));
             }
         }
     });
@@ -761,6 +776,11 @@ function createAppWindow(SRAapp) {
         state.height = bounds.height;
         //console.log('win.on.maximize('+e.sender.SRAname+') = ' + JSON.stringify(state));
         localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
+        e.sender.SRAapp.x = state.x;
+        e.sender.SRAapp.y = state.y;
+        e.sender.SRAapp.width = state.width;
+        e.sender.SRAapp.height = state.height;
+        console.log('win.maximize = ' + JSON.stringify(state));
     });
     
     win.on('restore', function(e) {
@@ -772,6 +792,11 @@ function createAppWindow(SRAapp) {
         state.height = bounds.height;
         //console.log('win.on.restore('+e.sender.SRAname+') = ' + JSON.stringify(state));
         localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
+        e.sender.SRAapp.x = state.x;
+        e.sender.SRAapp.y = state.y;
+        e.sender.SRAapp.width = state.width;
+        e.sender.SRAapp.height = state.height;
+        console.log('win.restore = ' + JSON.stringify(state));
     });
     
     // Emitted when the window is closed.
@@ -781,7 +806,6 @@ function createAppWindow(SRAapp) {
         if (main) main.webContents.send('loadingApps','Closing: '+e.sender.SRAapp.name);
     });
 
-    windows.push(win); //keep a reference so it won't garbarge collect it
     return win;
 };
 

@@ -174,7 +174,7 @@
                               <option value="default">default</option>
                          </select>
                     </form>
-                    <a id="settings" href="javascript:launch('settings');"><span id="settings-text" class="settings-text">Settings</span></span><img class="settings-icon" src="resources/settings-icon.png" alt="Settings"></a>
+                    <a id="settings" href="javascript:launch('Settings');"><span id="settings-text" class="settings-text">Settings</span></span><img class="settings-icon" src="resources/settings-icon.png" alt="Settings"></a>
                 </td>
                 </tr>
                 </table>
@@ -604,7 +604,7 @@
                             a_text  = document.createElement('div');
                             td_text.appendChild(a_text);
                             a_text.setAttribute('class','settings-text');
-                            a_text.addEventListener('click',new Function('launch("settings");'));
+                            a_text.addEventListener('click',new Function('launch("Settings");'));
                         }
                         else {
                             a_text  = document.createElement('a');
