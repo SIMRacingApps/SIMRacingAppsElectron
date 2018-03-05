@@ -316,7 +316,7 @@
                             else
                                 document.getElementById("delete").disabled = true;
                             
-                            if (SRAlauncher.configuration != configuration) {
+                            if (SRAlauncher.configuration.toLowerCase() != configuration.toLowerCase()) {
                                 SRAlauncher.configuration = configuration;
                                 console.log('ipc.send.loadConfiguration('+configuration+')');
                                 ipc.send('loadConfiguration',configuration);
@@ -353,7 +353,7 @@
                 option.setAttribute("value",configuration);
                 option.innerHTML = configuration;
                 datalist.appendChild(option);
-                if (SRAlauncher.configuration == configuration)
+                if (SRAlauncher.configuration.toLowerCase() == configuration.toLowerCase())
                     datalist.selectedIndex = selectedIndex;
                 selectedIndex++;
             }
@@ -407,7 +407,7 @@
                 datalist.addEventListener('change',configurationChange,false);
                 var selectedIndex = 0;
                 for (var configuration in SRAlauncher.configurations) {
-                    if (SRAlauncher.configuration == configuration)
+                    if (SRAlauncher.configuration.toLowerCase() == configuration.toLowerCase())
                         datalist.selectedIndex = selectedIndex;
                     selectedIndex++;
                 }

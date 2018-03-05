@@ -1,4 +1,5 @@
 
+console.log("SRALauncher, Electron Version = " + process.versions.electron);
 const LocalStorage   = require('node-localstorage').LocalStorage;
 const XMLHttpRequest = require("node-XMLHttpRequest").XMLHttpRequest;
 const electron       = require('electron');
@@ -6,6 +7,8 @@ const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 const ipc = electron.ipcMain;
 var storagePath = app.getPath('documents')+'\\SIMRacingApps\\storage\\';
+console.log("Electron storage at "+storagePath);
+
 var defaultStorage = new LocalStorage(storagePath + 'default');
 
 var SRAlauncher = {};
@@ -66,6 +69,8 @@ for (var i=1;i < process.argv.length;i++) {
     else
     if (arg == "-lang") {
         SRAlauncher.lang = process.argv[++i];
+        //TODO: implement when Electron merges it to master.
+        //app.setLocale(SRAlauncher.lang);
     }
     else
     if (arg == "-delay") {
@@ -73,7 +78,15 @@ for (var i=1;i < process.argv.length;i++) {
     }
     else
     if (arg == "-storage" || arg == "-configuration") {
-        SRAlauncher.configuration = process.argv[++i].toLowerCase();
+        ++i;
+        var a = null;
+        //first see if we already have one saved
+        for (var c in SRAlauncher.configurations) {
+            if (c.toLowerCase() == process.argv[i].toLowerCase()) {
+                a = c;
+            }
+        }
+        SRAlauncher.configuration = a ? a : c;
         SRAlauncher.configurations[SRAlauncher.configuration] = true;
     }
     else
@@ -225,15 +238,23 @@ function loadMain() {
     var guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
     
     function loadConfiguration(configuration) {
-        SRAlauncher.configuration = configuration;
-        SRAlauncher.configurations[configuration] = true;
+        var a = null;
+        //first see if we already have one saved
+        for (var c in SRAlauncher.configurations) {
+            if (c.toLowerCase() == configuration.toLowerCase()) {
+                a = c;
+            }
+        }
+        SRAlauncher.configuration = a ? a : configuration;
+        SRAlauncher.configurations[SRAlauncher.configuration] = true;
+        console.log('loadConfiguration = ' + SRAlauncher.configuration);
         
         defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
         console.log('loadConfiguration = ' + JSON.stringify(SRAlauncher));
         main.setTitle('SIMRacingApps - ' + SRAlauncher.configuration);
         localStorage   = (SRAlauncher.configuration == 'default' ? defaultStorage : new LocalStorage(storagePath + SRAlauncher.configuration));
         
-        console.log("Loading configuration: " + configuration);
+        console.log("Loading configuration: " + SRAlauncher.configuration);
         for (var i=0; i < windows.length; i++) {
             if (windows[i]) {
                 windows[i].close();
@@ -383,10 +404,13 @@ function loadMain() {
     
     ipc.on('deleteConfiguration',function(e,configuration) {
         console.log('main.on.deleteConfiguration('+configuration+')');
-        if (configuration != 'default') {
-            SRAlauncher.configuration = 'default';
-            delete SRAlauncher.configurations[configuration];
+        if (configuration.toLowerCase() != 'default') {
+            for (var c in SRAlauncher.configurations) {
+                if (configuration.toLowerCase() == c.toLowerCase())
+                    delete SRAlauncher.configurations[c];
+            }
             localStorage.clear();
+            SRAlauncher.configuration = 'default';
             defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
             loadConfiguration('default');
         }
