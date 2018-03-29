@@ -48,6 +48,7 @@ var backgroundColor = "";
 var seenElectronArgs = false;  //we only want the args that come after the electron args
 var menu=true;
 var currentState = 'notconnected';
+var showAppsOnTaskBar = false;
 
 console.log('argv = ',process.argv);
 
@@ -99,6 +100,10 @@ for (var i=1;i < process.argv.length;i++) {
         backgroundColor = 'transparent';
     }
     else
+    if (arg == "-showappsontaskbar") {
+    	showAppsOnTaskBar = true;
+    }
+    else
     if (arg == "-noclickthrough") {
         clickthrough = false;
     }
@@ -138,17 +143,24 @@ function updateStatus(win) {
                    +', inreplay='+win.SRAapp.inreplay
                    );
 
-        if (win.SRAapp.notconnected && currentState == 'notconnected')
+        if (win.SRAapp.notconnected && currentState == 'notconnected') {
             win.show();
+        }
         else
-        if (win.SRAapp.ingarage && currentState == 'ingarage')
+        if (win.SRAapp.ingarage && currentState == 'ingarage') {
+            win.focus();
             win.show();
+        }
         else
-        if (win.SRAapp.inreplay && currentState == 'inreplay')
+        if (win.SRAapp.inreplay && currentState == 'inreplay') {
+        	win.focus();
             win.show();
+        }
         else
-        if (win.SRAapp.incar && currentState == 'incar')
+        if (win.SRAapp.incar && currentState == 'incar') {
+        	win.focus();
             win.show();
+        }
         else
             win.hide();
     }
@@ -688,6 +700,10 @@ function createAppWindow(SRAapp) {
     
     console.log("creating BrowserWindow() = " + JSON.stringify(options));
     var win = new BrowserWindow(options);
+    
+    if (!showAppsOnTaskBar)
+        win.setSkipTaskbar(true);
+
 /*    
     var arg = {
             x:      options.x,
