@@ -27,6 +27,19 @@
             padding-bottom:   10px;
             white-space:      nowrap;
         }
+        .items-header {
+            background-color: blue;
+            color:            white;
+            width:            100%;
+            clear:            both;
+            font-size:        150%;
+            line-height:      70%;
+            text-align:       center;
+            padding-bottom:   10px;
+            white-space:      nowrap;
+            border-top: 8px solid white;
+            border-left: 3px solid white;
+        }
         #sratitle {
             color:            white;
         }
@@ -60,6 +73,9 @@
             padding-bottom:   10px;
             white-space:      nowrap;
         }
+        .table-items {
+            border-collapse: collapse;
+        }
         .item {
             width: 100%;
             height: 60px;
@@ -72,6 +88,26 @@
             max-height: 60px;
             text-align: center;
             cursor: pointer;
+            border-top: 8px solid white;
+            border-left: 3px solid white;
+        }
+        .options {
+            border-top: 8px solid white;
+            border-left: 3px solid white;
+        }
+        .image {
+            max-width:  100px;
+            max-height: 60px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .help {
+            border-top: 8px solid white;
+            border-left: 3px solid white;
+            text-decoration: none;
+        }
+        .help a {
+            text-decoration: none;
         }
         .name {
             text-align: center;
@@ -128,12 +164,14 @@
             text-align: left;
             white-space: nowrap;
             color: white;
+            text-decoration: none;
         }
         .itemdesc {
             height: 100%;
             font-size: 90%;
             text-align: left;
             color: white;
+            text-decoration: none;
         }
         .upload {
             font-size: 25px;
@@ -422,6 +460,7 @@
             checkForUpdate();
             
             var listingsTable = document.getElementById("listingsTable");
+            listingsTable.setAttribute('class','table-items');
             
             var listingsBody = document.getElementById("listingsBody");
             listingsBody.parentElement.removeChild(listingsBody);
@@ -435,7 +474,7 @@
                     var tr_header = document.createElement('tr');
                     
                     var td_header = document.createElement('td');
-                    td_header.setAttribute('class','header');
+                    td_header.setAttribute('class','items-header');
                     td_header.setAttribute('colspan','4');
                     td_header.innerHTML = serverVersion.translations[header] || header;
                     tr_header.appendChild(td_header);
@@ -451,6 +490,7 @@
                         
                         var td_form = document.createElement('td');
                         tr_item.appendChild(td_form);
+                        td_form.setAttribute('class','options');
                         
                         var form_options = document.createElement('form');
                         td_form.appendChild(form_options);
@@ -509,6 +549,7 @@
                         
 						var td_show = document.createElement('td');
 						tr_item.appendChild(td_show);
+                        td_show.setAttribute('class','options');
 						var show_form_options = document.createElement('form');
 						td_show.appendChild(show_form_options);
 						show_form_options.setAttribute('class','show_options_form');
@@ -587,7 +628,7 @@
                         
                         var img_icon = document.createElement('img');
                         td_icon.appendChild(img_icon);
-                        img_icon.setAttribute('class','icon');
+                        img_icon.setAttribute('class','image');
                         if (item.icon.match(/^http/))
                             img_icon.setAttribute('src',item.icon);
                         else
@@ -595,6 +636,7 @@
                         img_icon.addEventListener('click',new Function('launch("'+item.name+'","'+item.url+'");')); 
                         
                         var td_text = document.createElement('td');
+                        td_text.setAttribute('class','help');
                         tr_item.appendChild(td_text);
                         
                         var a_text;
