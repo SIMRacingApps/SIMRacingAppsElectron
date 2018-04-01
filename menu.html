@@ -426,12 +426,23 @@
             file.name="file";
             file.id="file";
             file.accept=".sra";
+            file.addEventListener('change',() => {
+                var f = document.forms["upload_form"].elements;
+                var cansubmit = true;
+
+                for (var i = 0; i < f.length; i++) {
+                    if (f[i].value.length == 0) cansubmit = false;
+                }
+
+                document.getElementById('upload').disabled = !cansubmit;
+            },false);
             document.getElementById("upload_form").appendChild(file);
             
             var submit = document.createElement("input");
             submit.type="submit";
             submit.name="upload";
             submit.id="upload";
+            submit.disabled = true;
             document.getElementById("upload_form").appendChild(submit);
             
             //now translate the buttons
