@@ -655,8 +655,7 @@ function loadMain() {
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
-app.disableHardwareAcceleration();
-app.on('ready', function () {
+app.on('ready', function() {
     loadMain();
 });
 
