@@ -40,8 +40,8 @@ echo Atom/Electron Version
 type "%ELECTRON%\version"
 echo.   
 echo Starting: %*
-if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --enable-logging --disable-gpu . %*
-if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\electron.exe" --disable-gpu . %*
+if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --enable-logging . %*
+if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\electron.exe" . %*
 goto end
 
 :noelectron

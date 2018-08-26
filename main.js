@@ -49,6 +49,7 @@ var seenElectronArgs = false;  //we only want the args that come after the elect
 var menu=true;
 var currentState = 'notconnected';
 var showAppsOnTaskBar = false;
+var enableHardwareAcceleration = false;
 
 console.log('argv = ',process.argv);
 
@@ -66,6 +67,11 @@ for (var i=1;i < process.argv.length;i++) {
     else
     if (arg == "-port") {
         SRAlauncher.port = process.argv[++i];
+    }
+    else
+    if (arg == "-enablehardwareacceleration") {
+        enableHardwareAcceleration = true;
+        console.log('enableHardwareAcceleration = true');
     }
     else
     if (arg == "-lang") {
@@ -133,6 +139,12 @@ defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
 console.log('save args = ' + JSON.stringify(SRAlauncher));
 
 var localStorage   = (SRAlauncher.configuration == 'default' ? defaultStorage : new LocalStorage(storagePath + SRAlauncher.configuration));
+
+
+if (!enableHardwareAcceleration) {
+    console.log('calling app.disableHardwareAcceleration()');
+    app.disableHardwareAcceleration();
+}
 
 function updateStatus(win) {
     if (win && win.SRAapp.name != 'Settings') {
