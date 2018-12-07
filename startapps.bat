@@ -29,7 +29,7 @@ echo Documents found at %DOCUMENTS%
 cd %~dp0
 set ELECTRON_NO_ATTACH_CONSOLE=true
 if "x%ELECTRON%" == "x" set ELECTRON=electron
-if not exist "%ELECTRON%\electron.exe" goto noelectron
+if not exist "%ELECTRON%\SIMRacingApps-electron.exe" goto noelectron
 
 @rem make sure these exist. Could be starting before server or on stand alone PC, LapTop or Tablet
 @mkdir %DOCUMENTS%\SIMRacingApps 2>nul
@@ -40,12 +40,12 @@ echo Atom/Electron Version
 type "%ELECTRON%\version"
 echo.   
 echo Starting: %*
-if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\electron.exe" --enable-logging . %*
-if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\electron.exe" . %*
+if not "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" "%ELECTRON%\SIMRacingApps-electron.exe" --enable-logging . %*
+if "x%ELECTRON_NO_ATTACH_CONSOLE%" == "xtrue" start "SIMRacingApps" "%ELECTRON%\SIMRacingApps-electron.exe" . %*
 goto end
 
 :noelectron
-echo "%ELECTRON%\electron.exe" was not found
+echo "%ELECTRON%\SIMRacingApps-electron.exe" was not found
 
 :end
 @ping -n 5 -w 1000 localhost >nul
