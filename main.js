@@ -13,7 +13,7 @@ var defaultStorage = new LocalStorage(storagePath + 'default');
 
 var SRAlauncher = {};
 if (defaultStorage.getItem("SIMRacingAppsLauncher"))
-    SRAlauncher = JSON.parse(defaultStorage.getItem("SIMRacingAppsLauncher"));
+    SRAlauncher = parseJSON(defaultStorage.getItem("SIMRacingAppsLauncher"));
 
 SRAlauncher.hostname       = SRAlauncher.hostname       || 'localhost';
 SRAlauncher.port           = SRAlauncher.port           || 80;
@@ -144,6 +144,17 @@ var localStorage   = (SRAlauncher.configuration == 'default' ? defaultStorage : 
 if (!enableHardwareAcceleration) {
     console.log('calling app.disableHardwareAcceleration()');
     app.disableHardwareAcceleration();
+}
+
+
+function parseJSON(s) {
+    try {
+        return JSON.parse(s);
+    }
+    catch (e) {
+        return null;
+    }
+    return null;
 }
 
 function updateStatus(win) {
@@ -293,7 +304,7 @@ function loadMain() {
         request.onreadystatechange = function(e) {
             if (this.readyState == this.DONE) {
                 if (this.status == 200) {
-                    var listings = JSON.parse(this.responseText);
+                    var listings = parseJSON(this.responseText);
                     listings.SRAlauncher = SRAlauncher;
 
                     listings.lang = i18n;
@@ -351,8 +362,10 @@ function loadMain() {
                                     item.ingarage      = true;
                                     item.inreplay      = true;
                                     
+                                    console.log('loading menu item = ' + JSON.stringify(item));
+                                    
                                     if (localStorage.getItem(item.name)) {
-                                        var state = JSON.parse(localStorage.getItem(item.name));
+                                        var state = parseJSON(localStorage.getItem(item.name));
                                         if (state) {
                                             item.x             = typeof(state.x) === 'undefined' ? item.x : state.x;
                                             item.y             = typeof(state.y) === 'undefined' ? item.y : state.y;
@@ -372,12 +385,12 @@ function loadMain() {
                                         }
                                     }
                                     localStorage.setItem(item.name,JSON.stringify(item));
-                                    console.log('save menu item = ' + JSON.stringify(item));
+                                    console.log('saving menu item = ' + JSON.stringify(item));
                                 }
 
                                 if (item.loadonstartup || (!menu && item.name.toLowerCase() in appsToLoad)) {
                                     if (localStorage.getItem(item.name)) {
-                                        var state = JSON.parse(localStorage.getItem(item.name));
+                                        var state = parseJSON(localStorage.getItem(item.name));
                                         if (state) {
                                             item.x             = typeof(state.x) === 'undefined' ? item.x : state.x;
                                             item.y             = typeof(state.y) === 'undefined' ? item.y : state.y;
@@ -442,7 +455,7 @@ function loadMain() {
     
     ipc.on('itemChanged', function(e,item) {
         console.log('itemChanged().item = ' + JSON.stringify(item));
-        var state = JSON.parse(localStorage.getItem(item.name));
+        var state = parseJSON(localStorage.getItem(item.name));
         if (state) {
             //other windows are only allowed to change the following values
             if (typeof item.transparent !== 'undefined')
@@ -551,7 +564,7 @@ function loadMain() {
             });
         }
         console.log("ipc.on.loadApp("+name+") = " + SRAapp);
-        loadApp(JSON.parse(SRAapp));
+        loadApp(parseJSON(SRAapp));
     });
 
 
@@ -597,7 +610,7 @@ function loadMain() {
     messages_request.onreadystatechange = function(e) {
         if (this.readyState == this.DONE) {
             if (this.status == 200) {
-                var response = JSON.parse(this.responseText);
+                var response = parseJSON(this.responseText);
 
                 last_message = response.Value;
             }
@@ -621,7 +634,7 @@ function loadMain() {
     status_request.onreadystatechange = function(e) {
         if (this.readyState == this.DONE) {
             if (this.status == 200) {
-                var response = JSON.parse(this.responseText);
+                var response = parseJSON(this.responseText);
 
                 last_status = response.Value;
             }
@@ -645,7 +658,7 @@ function loadMain() {
     replay_request.onreadystatechange = function(e) {
         if (this.readyState == this.DONE) {
             if (this.status == 200) {
-                var response = JSON.parse(this.responseText);
+                var response = parseJSON(this.responseText);
 
                 last_replay = response.Value;
             }
@@ -790,7 +803,7 @@ function createAppWindow(SRAapp) {
     win.on('move', function(e) {
         var bounds = e.sender.getBounds();
         if (bounds) {
-            var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
+            var state  = parseJSON(localStorage.getItem(e.sender.SRAapp.name));
             if (state) {
                 state.x = bounds.x;
                 state.y = bounds.y;
@@ -806,7 +819,7 @@ function createAppWindow(SRAapp) {
     win.on('resize', function(e) {
         var bounds = e.sender.getBounds();
         if (bounds && bounds.width && bounds.height) {
-            var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
+            var state  = parseJSON(localStorage.getItem(e.sender.SRAapp.name));
             if (state) {
                 state.width = bounds.width;
                 state.height = bounds.height;
@@ -821,7 +834,7 @@ function createAppWindow(SRAapp) {
     
     win.on('maximize', function(e) {
         var bounds = e.sender.getBounds();
-        var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
+        var state  = parseJSON(localStorage.getItem(e.sender.SRAapp.name));
         state.x = bounds.x;
         state.y = bounds.y;
         state.width = bounds.width;
@@ -837,7 +850,7 @@ function createAppWindow(SRAapp) {
     
     win.on('restore', function(e) {
         var bounds = e.sender.getBounds();
-        var state  = JSON.parse(localStorage.getItem(e.sender.SRAapp.name));
+        var state  = parseJSON(localStorage.getItem(e.sender.SRAapp.name));
         state.x = bounds.x;
         state.y = bounds.y;
         state.width = bounds.width;
