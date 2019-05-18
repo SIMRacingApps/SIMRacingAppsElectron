@@ -152,9 +152,9 @@ function parseJSON(s) {
         return JSON.parse(s);
     }
     catch (e) {
-        return null;
+        return {};
     }
-    return null;
+    return {};
 }
 
 function updateStatus(win) {
