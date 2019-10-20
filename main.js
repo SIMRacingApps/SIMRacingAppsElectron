@@ -1,4 +1,4 @@
-
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
 console.log("SRALauncher, Electron Version = " + process.versions.electron);
 const LocalStorage   = require('node-localstorage').LocalStorage;
 const XMLHttpRequest = require("node-XMLHttpRequest").XMLHttpRequest;
@@ -203,7 +203,8 @@ function loadMain() {
         resizable:      true,
         alwaysOnTop:    false,
         frame:          true,
-        transparent:    false
+        transparent:    false,
+        webPreferences: {nodeIntegration: true, webviewTag: true}
     });
     
     main.SRAname = "SIMRacingAppsLauncher";  //just for storage to save state
@@ -706,7 +707,8 @@ function createAppWindow(SRAapp) {
             resizable:      true,
             alwaysOnTop:    true,
             frame:          typeof SRAapp.frame === 'undefined' ? true : SRAapp.frame,
-            transparent:    (SRAapp.frame ? false : SRAapp.transparent) || false
+            transparent:    (SRAapp.frame ? false : SRAapp.transparent) || false,
+            webPreferences: {nodeIntegration: true, webviewTag: true}
         };
     
     //sync SRAapp with options
