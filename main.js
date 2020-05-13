@@ -613,7 +613,7 @@ function loadMain() {
             if (this.status == 200) {
                 var response = parseJSON(this.responseText);
 
-                last_message = response.Value;
+                last_message = response.Value + "";  //force to a string
             }
             if (this.status != 0) {
                 setTimeout( function() {
