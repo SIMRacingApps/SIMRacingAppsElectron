@@ -25,6 +25,7 @@ SRAlauncher.y              = SRAlauncher.y               ? SRAlauncher.y : 0;
 SRAlauncher.width          = SRAlauncher.width          || 800;
 SRAlauncher.height         = SRAlauncher.height         || 680;
 SRAlauncher.version        = app.getVersion()+" ("+process.versions.electron+")";
+SRAlauncher.startMinimized = false;
 
 console.log("SRAlauncher = " + JSON.stringify(SRAlauncher));
 
@@ -108,6 +109,10 @@ for (var i=1;i < process.argv.length;i++) {
     else
     if (arg == "-showappsontaskbar") {
     	showAppsOnTaskBar = true;
+    }
+    else
+    if (arg == "-startminimized") {
+        SRAlauncher.startMinimized = true;
     }
     else
     if (arg == "-noclickthrough") {
@@ -208,6 +213,10 @@ function loadMain() {
     });
     
     main.SRAname = "SIMRacingAppsLauncher";  //just for storage to save state
+    
+    //if user wants to run minimized
+    if (SRAlauncher.startMinimized)
+        main.minimize();
     
     main.loadURL('file://' + app.getAppPath() + (menu ? '/menu.html' : '/loader.html'));
 //        + '?hostname=' + SRAlauncher.hostname
@@ -731,6 +740,15 @@ function createAppWindow(SRAapp) {
     if (!showAppsOnTaskBar)
         win.setSkipTaskbar(true);
 
+    //the default for the second argument is "floating". 
+    //Someone says "normal" fixes the issue where it will stay on top of iRacing.
+    //iRacing must be tricking windows to think it's a system level window.
+    win.setAlwaysOnTop(true,"normal");
+    
+    //if the window is minimized based on a previous state, then restore it.
+    if (win.isMinimized())
+        win.restore();
+    
 /*    
     var arg = {
             x:      options.x,
