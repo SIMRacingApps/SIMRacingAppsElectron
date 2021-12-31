@@ -209,7 +209,7 @@ function loadMain() {
         alwaysOnTop:    false,
         frame:          true,
         transparent:    false,
-        webPreferences: {nodeIntegration: true, webviewTag: true}
+        webPreferences: {nodeIntegration: true, contextIsolation: false, webviewTag: true}
     });
     
     main.SRAname = "SIMRacingAppsLauncher";  //just for storage to save state
