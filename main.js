@@ -6,6 +6,7 @@ const electron       = require('electron');
 const app = electron.app;  // Module to control application life.
 const BrowserWindow = electron.BrowserWindow;  // Module to create native browser window.
 const ipc = electron.ipcMain;
+var screen = null;
 var storagePath = app.getPath('documents')+'\\SIMRacingApps\\storage\\';
 console.log("Electron storage at "+storagePath);
 
@@ -194,10 +195,51 @@ function updateStatus(win) {
     }
 };
 
+function isWithinDisplayBounds(x,y,w,h) {
+    const displays = screen.getAllDisplays()
+    for (i=0; i < displays.length; i++) {
+        const area = displays[i].workArea;
+        if (//upper left
+        (   x >= area.x 
+        &&  y >= area.y 
+        &&  x < area.x + area.width 
+        &&  y < area.y + area.height
+        )
+        ||  //upper right
+        (   x+w-1 >= area.x 
+        &&  y     >= area.y 
+        &&  x+w-1 < area.x + area.width 
+        &&  y     < area.y + area.height
+        )
+        ||  //lower left
+        (   x     >= area.x 
+        &&  y+h-1 >= area.y 
+        &&  x     < area.x + area.width 
+        &&  y+h-1 < area.y + area.height
+        )
+        ||  //lower right
+        (   x+w-1 >= area.x 
+        &&  y+h-1 >= area.y 
+        &&  x+w-1 < area.x + area.width 
+        &&  y+h-1 < area.y + area.height
+        )
+        ) {
+            return true; 
+        }
+    }
+    return false;
+};
+
 function loadMain() {
     if (main != null)
         main.close();
     
+    if (!isWithinDisplayBounds(SRAlauncher.x,SRAlauncher.y,SRAlauncher.width,SRAlauncher.height)) {
+        console.log("Electron loadMain(x:" + SRAlauncher.x + ", y:" + SRAlauncher.y + ") outside of display area. Resetting to primary display");
+        SRAlauncher.x = 0;
+        SRAlauncher.y = 0;
+    }
+
     main = new BrowserWindow({
         width:          SRAlauncher.width, 
         height:         SRAlauncher.height,
@@ -217,7 +259,7 @@ function loadMain() {
     //if user wants to run minimized
     if (SRAlauncher.startMinimized)
         main.minimize();
-    
+     
     main.loadURL('file://' + app.getAppPath() + (menu ? '/menu.html' : '/loader.html'));
 //        + '?hostname=' + SRAlauncher.hostname
 //        + '&port='     + SRAlauncher.port
@@ -228,8 +270,10 @@ function loadMain() {
         var bounds = e.sender.getBounds();
         SRAlauncher.x = bounds.x;
         SRAlauncher.y = bounds.y;
-        defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
-        //console.log('move = ' + JSON.stringify(SRAlauncher));
+//        if (isWithinDisplayBounds(SRAlauncher.x, SRAlauncher.y,SRAlauncher.width,SRAlauncher.height)) {
+            defaultStorage.setItem("SIMRacingAppsLauncher",JSON.stringify(SRAlauncher));
+            //console.log('move = ' + JSON.stringify(SRAlauncher));
+//        }
     });
     
     main.on('resize', function(e) {
@@ -532,6 +576,12 @@ function loadMain() {
                 args:        SRAapp.args
             };
         
+        if (!isWithinDisplayBounds(options.x,options.y,options.width,options.height)) {
+            console.log("Electron loadApp("+SRAapp.name+", x:" + options.x + ", y:" + options.y + ") outside of display area. Resetting to primary display");
+            options.x = 0;
+            options.y = 0;
+        }
+
         //pick up the command line options
         if (SRAapp.name in appsToLoad) {
             options.transparent     = appsToLoad[item.name].transparent;
@@ -691,6 +741,12 @@ function loadMain() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+    screen = electron.screen;
+    const displays = screen.getAllDisplays();
+    for (i=0; i < displays.length; i++) {
+        const area = displays[i].workArea;
+        console.log("Electron Display " + i + " = x:" + area.x + ", y:" + area.y + ", width:" + area.width + ", height:" + area.height);
+    }
     loadMain();
 });
 
@@ -720,6 +776,12 @@ function createAppWindow(SRAapp) {
             webPreferences: {nodeIntegration: true, webviewTag: true}
         };
     
+    if (!isWithinDisplayBounds(options.x,options.y,options.width,options.height)) {
+        console.log("Electron createAppWindow("+SRAapp.name+", x:" + options.x + ", y:" + options.y + ") outside of display area. Resetting to primary display");
+        options.x = 0;
+        options.y = 0;
+    }
+
     //sync SRAapp with options
     SRAapp.width = options.width;
     SRAapp.height = options.height;
@@ -733,7 +795,7 @@ function createAppWindow(SRAapp) {
     if (options.transparent && delay > 0) {
         options.height = SRAapp.height + 2;
     }
-    
+
     console.log("creating BrowserWindow() = " + JSON.stringify(options));
     var win = new BrowserWindow(options);
     
@@ -827,11 +889,14 @@ function createAppWindow(SRAapp) {
             if (state) {
                 state.x = bounds.x;
                 state.y = bounds.y;
-                //console.log('win.on.move('+e.sender.SRAapp.name+') = ' + JSON.stringify(state));
-                localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
-                e.sender.SRAapp.x = state.x;
-                e.sender.SRAapp.y = state.y;
-                //console.log('win.move = ' + JSON.stringify(state));
+//this was an attempt to keep the window withing the display boundries. It didn't work
+//                if (isWithinDisplayBounds(state.x,state.y,state.width,state.height)) {
+                    //console.log('win.on.move('+e.sender.SRAapp.name+') = ' + JSON.stringify(state));
+                    localStorage.setItem(e.sender.SRAapp.name,JSON.stringify(state));
+                    e.sender.SRAapp.x = state.x;
+                    e.sender.SRAapp.y = state.y;
+                    //console.log('win.move = ' + JSON.stringify(state));
+//                }
             }
         }
     });
