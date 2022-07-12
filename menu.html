@@ -243,6 +243,18 @@
         </td></tr>
     </tfoot>
     </table>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GT1JP615VC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config','G-GT1JP615VC', {
+      	'app_name':       'SIMRacingAppsElectron',
+      	'send_page_view': false
+      });
+    </script>
     <script type="text/javascript">
         const ipc = require('electron').ipcRenderer;
         var websiteVersion = {};
@@ -768,6 +780,11 @@
                 websiteVersion.minor *= 1;
                 websiteBETAVersion.major *= 1;
                 websiteBETAVersion.minor *= 1;
+                
+                gtag('config', 'G-GT1JP615VC', {
+                	'app_name':    'SIMRacingAppsElectron',
+                	'app_version': serverVersion.major+"."+serverVersion.minor+"-"+serverVersion.build
+                });
                 
                 var versionString = "Version: "+serverVersion.major+"."+serverVersion.minor+"-"+serverVersion.build;
                 var websiteBETABuild = "";

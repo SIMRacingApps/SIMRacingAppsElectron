@@ -399,6 +399,37 @@ function loadMain() {
                     ga.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                     ga.send();
                     
+                    var gtag = new XMLHttpRequest();
+                    gtag.onreadystatechange = function() {
+                        if (this.readyState == this.DONE) {
+                            if (this.status == 200) {
+                                var s=ga;
+                                console.log('gtag sent: ');
+                            }
+                        }
+                    }
+
+                    var gtagurl = 'http://www.google-analytics.com/collect';
+                    var gtagdata  = 'v=1';
+                        gtagdata += '&t=pageview';
+                        gtagdata += '&tid=G-GT1JP615VC';
+                        gtagdata += '&cid='+encodeURI(guid);
+                        //gtagdata += '&cid='+Date.now()+'.'+Date.now();
+                        gtagdata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
+                        gtagdata += '&dh=localhost';
+                        gtagdata += '&dp=%2Felectron%2Fmenu';
+                        gtagdata += '&av='+encodeURI(version);
+                        gtagdata += '&dt='+encodeURI(title);
+                        gtagdata += '&an=SIMRacingApps';
+                        gtagdata += '&ul='+encodeURI(i18n);
+                        gtagdata += '&ua='+encodeURI('Electron '+SRAlauncher.version+' Windows');
+                        gtagdata += '&z=' + Date.now(); 
+                        
+                    console.log(gtagurl);
+                    console.log(gtagdata);
+                    gtag.open("POST",gtagurl+'?'+gtagdata);
+                    gtag.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                    gtag.send();
 
                     for (var headeridx in listings.headers) {
                         var header = listings.headers[headeridx];
@@ -438,6 +469,9 @@ function loadMain() {
                                                 item.height = 480;
                                         }
                                     }
+                                    item.verion = version;
+                                    item.title  = title;
+                                    item.i18n   = i18n;
                                     localStorage.setItem(item.name,JSON.stringify(item));
                                     console.log('saving menu item = ' + JSON.stringify(item));
                                 }
@@ -463,6 +497,9 @@ function loadMain() {
                                                 item.height = 480;
                                         }
                                     }
+                                    item.verion = version;
+                                    item.title  = title;
+                                    item.i18n   = i18n;
                                     localStorage.setItem(item.name,JSON.stringify(item));
                                     console.log('loadStartup = ' + JSON.stringify(item));
                                     loadApp(item);
@@ -599,6 +636,70 @@ function loadMain() {
         var win = createAppWindow(options);
         win.SRA_originalOptions = options;
         win.setAspectRatio(options.width/options.height);  //doesn't work on windows
+        
+        var ga = new XMLHttpRequest();
+        ga.onreadystatechange = function() {
+            if (this.readyState == this.DONE) {
+                if (this.status == 200) {
+                    var s=ga;
+                    console.log('ga sent: '+options.name);
+                }
+            }
+        }
+        
+        var gaurl = 'http://www.google-analytics.com/collect';
+        var gadata  = 'v=1';
+            gadata += '&t=pageview';
+            gadata += '&tid=UA-72478308-1';
+            gadata += '&cid='+encodeURI(guid);
+            //gadata += '&cid='+Date.now()+'.'+Date.now();
+            gadata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
+            gadata += '&dh=localhost';
+            gadata += '&dp=%2Felectron%2F'+encodeURI(options.name);
+            gadata += '&av='+encodeURI(SRAapp.version);
+            gadata += '&dt='+encodeURI(SRAapp.title);
+            gadata += '&an=SIMRacingApps';
+            gadata += '&ul='+encodeURI(SRAapp.i18n);
+            gadata += '&ua='+encodeURI('Electron '+SRAlauncher.version+' Windows');
+            gadata += '&z=' + Date.now(); 
+            
+        console.log(gaurl);
+        console.log(gadata);
+        ga.open("POST",gaurl+'?'+gadata);
+        ga.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        ga.send();
+        
+        var gtag = new XMLHttpRequest();
+        gtag.onreadystatechange = function() {
+            if (this.readyState == this.DONE) {
+                if (this.status == 200) {
+                    var s=ga;
+                    console.log('gtag sent: '+options.name);
+                }
+            }
+        }
+
+        var gtagurl = 'http://www.google-analytics.com/collect';
+        var gtagdata  = 'v=1';
+            gtagdata += '&t=pageview';
+            gtagdata += '&tid=G-GT1JP615VC';
+            gtagdata += '&cid='+encodeURI(guid);
+            //gtagdata += '&cid='+Date.now()+'.'+Date.now();
+            gtagdata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
+            gtagdata += '&dh=localhost';
+            gtagdata += '&dp=%2Felectron%2F'+encodeURI(options.name);
+            gtagdata += '&av='+encodeURI(SRAapp.version);
+            gtagdata += '&dt='+encodeURI(SRAapp.title);
+            gtagdata += '&an=SIMRacingApps';
+            gtagdata += '&ul='+encodeURI(SRAapp.i18n);
+            gtagdata += '&ua='+encodeURI('Electron '+SRAlauncher.version+' Windows');
+            gtagdata += '&z=' + Date.now(); 
+            
+        console.log(gtagurl);
+        console.log(gtagdata);
+        gtag.open("POST",gtagurl+'?'+gtagdata);
+        gtag.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        gtag.send();
     }
     
     ipc.on('loadApp',function(e,name,url) {
