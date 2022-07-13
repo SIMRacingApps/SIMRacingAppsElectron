@@ -267,7 +267,9 @@
             return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
         };
         
-        var guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+        function guid() {
+            return (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+        }
         
         function launch(name,url) {
             console.log('menu.html:launch('+name+','+url+')');

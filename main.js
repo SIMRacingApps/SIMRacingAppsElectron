@@ -324,7 +324,9 @@ function loadMain() {
     function S4() {
         return (((1+Math.random())*0x10000)|0).toString(16).substring(1); 
     };
-    var guid = (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+    function guid() {
+        return (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+    }
     
     function loadConfiguration(configuration) {
         var a = null;
@@ -359,12 +361,13 @@ function loadMain() {
             if (this.readyState == this.DONE) {
                 if (this.status == 200) {
                     var listings = parseJSON(this.responseText);
+                    var myguid = guid();
                     listings.SRAlauncher = SRAlauncher;
 
                     listings.lang = i18n;
                     var version = listings.version.major + '.' + listings.version.minor + '_' + listings.version.build + ' [' + i18n + ']';
                     var title = main.SRAname + ' Electron ' + SRAlauncher.version + ', Server Version '+version;
-                    console.log(title + ' ' + guid);
+                    console.log(title + ' ' + myguid);
                     main.setTitle(title + ' - ' + SRAlauncher.configuration);
 
                     var ga = new XMLHttpRequest();
@@ -381,7 +384,7 @@ function loadMain() {
                     var gadata  = 'v=1';
                         gadata += '&t=pageview';
                         gadata += '&tid=UA-72478308-1';
-                        gadata += '&cid='+encodeURI(guid);
+                        gadata += '&cid='+encodeURI(myguid);
                         //gadata += '&cid='+Date.now()+'.'+Date.now();
                         gadata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
                         gadata += '&dh=localhost';
@@ -413,7 +416,7 @@ function loadMain() {
                     var gtagdata  = 'v=1';
                         gtagdata += '&t=pageview';
                         gtagdata += '&tid=G-GT1JP615VC';
-                        gtagdata += '&cid='+encodeURI(guid);
+                        gtagdata += '&cid='+encodeURI(myguid);
                         //gtagdata += '&cid='+Date.now()+'.'+Date.now();
                         gtagdata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
                         gtagdata += '&dh=localhost';
@@ -647,11 +650,13 @@ function loadMain() {
             }
         }
         
+        var myguid = guid();
+        
         var gaurl = 'http://www.google-analytics.com/collect';
         var gadata  = 'v=1';
             gadata += '&t=pageview';
             gadata += '&tid=UA-72478308-1';
-            gadata += '&cid='+encodeURI(guid);
+            gadata += '&cid='+encodeURI(myguid);
             //gadata += '&cid='+Date.now()+'.'+Date.now();
             gadata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
             gadata += '&dh=localhost';
@@ -683,7 +688,7 @@ function loadMain() {
         var gtagdata  = 'v=1';
             gtagdata += '&t=pageview';
             gtagdata += '&tid=G-GT1JP615VC';
-            gtagdata += '&cid='+encodeURI(guid);
+            gtagdata += '&cid='+encodeURI(myguid);
             //gtagdata += '&cid='+Date.now()+'.'+Date.now();
             gtagdata += '&dl=http%3A%2F%2Flocalhost%2Felectron%2Fmenu';
             gtagdata += '&dh=localhost';
